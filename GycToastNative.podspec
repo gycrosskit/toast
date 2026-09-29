@@ -6,7 +6,7 @@ Pod::Spec.new do |spec|
   spec.license = { :type => 'Apache-2.0', :file => 'LICENSE' }
   spec.author = { 'gycrosskit' => 'guoyanggit@gmail.com' }
   spec.source = { :git => 'https://github.com/gycrosskit/toast.git', :tag => spec.version.to_s }
-  spec.source_files = 'Sources/GycToastNative/**/*.swift'
+  spec.source_files = 'iosApp/Sources/GycToastNative/**/*.swift'
   spec.ios.deployment_target = '15.0'
   spec.swift_version = '5.9'
 end
