@@ -2,6 +2,16 @@
 
 Android、iOS、HarmonyOS 共用的短消息出口。新消息替换旧消息；文案由应用本地化。KMP 的 `MessagePlatform` 是业务入口，CMP 使用 `toast-cmp` 的 CompositionLocal，鸿蒙 Kuikly 使用 `toast-kuikly` 的 Module。原生展示分别在 Android AAR、iOS `GycToastNative` 和鸿蒙 `@gycrosskit/toast-native` HAR。
 
+## 平台与目录
+
+| 平台 | KMP 模块 | 原生工程与分发 |
+| --- | --- | --- |
+| Android | [`toast-core`](toast-core)、[`toast-cmp`](toast-cmp) | [`androidApp`](androidApp) 是可运行的 Android 示例；AAR 经 JitPack 发布 |
+| iOS | [`toast-core`](toast-core)、[`toast-cmp`](toast-cmp) | [`iosApp`](iosApp) 提供 Swift Package / CocoaPods 源码；KMP 产物经 JitPack 发布 |
+| HarmonyOS | [`toast-core`](toast-core)、[`toast-kuikly`](toast-kuikly) | [`ohos/toast-native`](ohos/toast-native) 为 HAR，经 ohpm 发布；KMP 产物经 JitPack 发布 |
+
+`toast-core/` 对应 Gradle 模块 `:toast`，继续使用原有 Maven 坐标；平台代码位于各模块的对应 source set。
+
 ## KMP
 
 ```kotlin
@@ -40,6 +50,7 @@ JitPack 提供 Maven 产物，不能替代 Swift Package 的 Git 标签或鸿蒙
 
 ```bash
 VERSION=0.1.2 bash gradlew publishToMavenLocal
+ANDROID_HOME=/path/to/android-sdk bash gradlew :androidApp:assembleDebug
 xcodebuild -scheme GycToastNative -destination 'generic/platform=iOS Simulator' -sdk iphonesimulator build CODE_SIGNING_ALLOWED=NO
 cd ohos && DEVECO_SDK_HOME=/Applications/DevEco-Studio.app/Contents/sdk /Applications/DevEco-Studio.app/Contents/tools/hvigor/bin/hvigorw assembleHar --no-daemon
 ```

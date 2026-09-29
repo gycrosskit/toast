@@ -5,5 +5,5 @@ let package = Package(
     name: "GycToastNative",
     platforms: [.iOS(.v15)],
     products: [.library(name: "GycToastNative", targets: ["GycToastNative"])],
-    targets: [.target(name: "GycToastNative")]
+    targets: [.target(name: "GycToastNative", path: "iosApp/Sources/GycToastNative")]
 )

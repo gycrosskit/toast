@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">GY Toast Demo</string>
+    <string name="show_toast">显示 Toast</string>
+    <string name="toast_message">Toast 示例</string>
+</resources>
