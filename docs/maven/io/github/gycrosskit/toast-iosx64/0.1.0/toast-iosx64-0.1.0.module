@@ -1,0 +1,104 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../toast/0.1.0/toast-0.1.0.module",
+    "group": "io.github.gycrosskit",
+    "module": "toast",
+    "version": "0.1.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.11.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "iosX64ApiElements-published",
+      "attributes": {
+        "artifactType": "org.jetbrains.kotlin.klib",
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "ios_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.21-1.0.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "toast-iosX64Main-0.1.0.klib",
+          "url": "toast-iosx64-0.1.0.klib",
+          "size": 6554,
+          "sha512": "bf6744c8bb1d38762ae09c6b6038c2c270bfee07157f78c7d1a5292762a53050af48b286bf760f865fca233a47ef3e96a29667997135026683cf342a6d80b998",
+          "sha256": "d67ce6e58d6b0110de75a147bbb61e54e738f72a83bdb55e0598c0654a9fc31d",
+          "sha1": "1130fa198c6e5be8754063bc296e6fb11d8594bd",
+          "md5": "9eb2d21e971c1f0b060b0d5549f9da87"
+        }
+      ]
+    },
+    {
+      "name": "iosX64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "ios_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "files": [
+        {
+          "name": "toast-iosx64-0.1.0-sources.jar",
+          "url": "toast-iosx64-0.1.0-sources.jar",
+          "size": 2423,
+          "sha512": "fbb5fca42711c4012f28a4d3778dfc14de4f5a5bd61f8e8ae7d1cd9759dc6ef5777ba6f9964663ed4bb395c9b6fc54b80fbb09d6987e6cd4321849aafd26c388",
+          "sha256": "a8cedee5b5b5f8a2cae44658c1f6ce0e675fafac819c3385b056324d9e639f45",
+          "sha1": "d2c7e9600e992bb13f209e929350a3832467b096",
+          "md5": "adfcaac1357a890afb812c84f7d96549"
+        }
+      ]
+    },
+    {
+      "name": "iosX64MetadataElements-published",
+      "attributes": {
+        "artifactType": "org.jetbrains.kotlin.klib",
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "ios_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.21-1.0.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "toast-iosx64-0.1.0-metadata.jar",
+          "url": "toast-iosx64-0.1.0-metadata.jar",
+          "size": 2639,
+          "sha512": "8d45af850542ceeebf2598534d402eff9b9ecef15add8e21d2218bc97df59c3e9113a36fedc5304719081828f22e17845af845b1fa57d4f09164590a5f920dbe",
+          "sha256": "39c9a4f510ae744d7eb8e332e85eb0e550855eea1f5dcdbb7b494b0d7262bda3",
+          "sha1": "e0d665563abd63a21da8a929e9c295565b2c85f4",
+          "md5": "6f5adcaed5af11ed2cd3593e67303e6c"
+        }
+      ]
+    }
+  ]
+}

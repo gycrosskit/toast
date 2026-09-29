@@ -1,0 +1,163 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../toast-cmp/0.1.0/toast-cmp-0.1.0.module",
+    "group": "io.github.gycrosskit",
+    "module": "toast-cmp",
+    "version": "0.1.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.11.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "android",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "androidJvm"
+      },
+      "dependencies": [
+        {
+          "group": "io.github.gycrosskit",
+          "module": "toast",
+          "version": {
+            "requires": "0.1.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.21-1.0.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "toast-cmp-release.aar",
+          "url": "toast-cmp-android-0.1.0.aar",
+          "size": 3909,
+          "sha512": "d358b9283c4023cef429dfcad68d0adf61c821defd8987d060113ba748f4df5163b5b9f4d6f5ffb0e1fcc62ba752569ccb26ccfc3723cc21e2d38697c04537ce",
+          "sha256": "810508bbefb347c06113151a01ed0d8846f946ddd789c36abd79e895f032ebac",
+          "sha1": "ca3cc2a6db600cdae67002f4b04b19587975fb80",
+          "md5": "9fa94f5fce4a4ada27cccdd157d52130"
+        }
+      ]
+    },
+    {
+      "name": "releaseRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "android",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "androidJvm"
+      },
+      "dependencies": [
+        {
+          "group": "io.github.gycrosskit",
+          "module": "toast",
+          "version": {
+            "requires": "0.1.0"
+          },
+          "excludes": [
+            {
+              "group": "org.jetbrains.kotlin",
+              "module": "kotlin-stdlib-common"
+            },
+            {
+              "group": "org.jetbrains.kotlin",
+              "module": "kotlin-test-common"
+            },
+            {
+              "group": "org.jetbrains.kotlin",
+              "module": "kotlin-test-annotations-common"
+            }
+          ]
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.21-1.0.0"
+          },
+          "excludes": [
+            {
+              "group": "org.jetbrains.kotlin",
+              "module": "kotlin-stdlib-common"
+            },
+            {
+              "group": "org.jetbrains.kotlin",
+              "module": "kotlin-test-common"
+            },
+            {
+              "group": "org.jetbrains.kotlin",
+              "module": "kotlin-test-annotations-common"
+            }
+          ]
+        },
+        {
+          "group": "org.jetbrains.compose.runtime",
+          "module": "runtime",
+          "version": {
+            "requires": "1.10.3"
+          },
+          "excludes": [
+            {
+              "group": "org.jetbrains.kotlin",
+              "module": "kotlin-stdlib-common"
+            },
+            {
+              "group": "org.jetbrains.kotlin",
+              "module": "kotlin-test-common"
+            },
+            {
+              "group": "org.jetbrains.kotlin",
+              "module": "kotlin-test-annotations-common"
+            }
+          ]
+        }
+      ],
+      "files": [
+        {
+          "name": "toast-cmp-release.aar",
+          "url": "toast-cmp-android-0.1.0.aar",
+          "size": 3909,
+          "sha512": "d358b9283c4023cef429dfcad68d0adf61c821defd8987d060113ba748f4df5163b5b9f4d6f5ffb0e1fcc62ba752569ccb26ccfc3723cc21e2d38697c04537ce",
+          "sha256": "810508bbefb347c06113151a01ed0d8846f946ddd789c36abd79e895f032ebac",
+          "sha1": "ca3cc2a6db600cdae67002f4b04b19587975fb80",
+          "md5": "9fa94f5fce4a4ada27cccdd157d52130"
+        }
+      ]
+    },
+    {
+      "name": "releaseSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "android",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "androidJvm"
+      },
+      "files": [
+        {
+          "name": "toast-cmp-android-0.1.0-sources.jar",
+          "url": "toast-cmp-android-0.1.0-sources.jar",
+          "size": 1498,
+          "sha512": "19e09c9c929948f473c2a38eb72546c47e1beb31d4d376bd27da77bec58dde37724c7175edaf48bc9e02339a3ac3ecf475cc514ac6aafe9dfb7c6d712b0e3404",
+          "sha256": "6d75a64a729a0b6237b037298d6d12577a83b4d63f2c23309ac8af4c3dd5fec3",
+          "sha1": "e1d4ffc61db3087da6810ed032f93d3454317872",
+          "md5": "4863860849fd1f9b3e78c847faa9fd26"
+        }
+      ]
+    }
+  ]
+}

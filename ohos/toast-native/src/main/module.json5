@@ -1,0 +1,7 @@
+{
+  "module": {
+    "name": "ToastNative",
+    "type": "har",
+    "deviceTypes": ["default", "tablet"]
+  }
+}

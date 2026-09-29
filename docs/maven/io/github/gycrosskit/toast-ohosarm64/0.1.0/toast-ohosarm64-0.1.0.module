@@ -1,0 +1,73 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../toast/0.1.0/toast-0.1.0.module",
+    "group": "io.github.gycrosskit",
+    "module": "toast",
+    "version": "0.1.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.11.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "ohosArm64ApiElements-published",
+      "attributes": {
+        "artifactType": "org.jetbrains.kotlin.klib",
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "ohos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.21-1.0.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "toast-ohosArm64Main-0.1.0.klib",
+          "url": "toast-ohosarm64-0.1.0.klib",
+          "size": 4773,
+          "sha512": "7847c10fe54e6438e8f1d131b59bcfe1eb84d2fb54d54d69535b4fc08e038cd84cd3912ce56d2454d479c3eb55e5153e99bd0595252655b8f9c05db5e36cded1",
+          "sha256": "c520d80dc3b528a6235a20d29dcc5bc64a3d1aaddc3b333c5678f4c30ad6e9aa",
+          "sha1": "8b364eca1d01c26bf0d3e9156a55e5a62c3bb51d",
+          "md5": "60e4c6014cba59a870facda7b20b79af"
+        }
+      ]
+    },
+    {
+      "name": "ohosArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "ohos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "files": [
+        {
+          "name": "toast-ohosarm64-0.1.0-sources.jar",
+          "url": "toast-ohosarm64-0.1.0-sources.jar",
+          "size": 1331,
+          "sha512": "496afffbfe9dc5d6f76035650b28b9a3b11b2383be89c343ae1dec63fe4a888c4151514af3689cc8bfbd73739553c2c0fa883fe58929939d1e301844dd6f766e",
+          "sha256": "3adf5836a4a724b07eaefc031c8cca132810f0d462d0b5538c5331ccf937f150",
+          "sha1": "eb4ad2b28e3b3fb7f2f34ffc50d732aa2a1c8391",
+          "md5": "887a2d5b708a838c34cc5bc0147b0df5"
+        }
+      ]
+    }
+  ]
+}
