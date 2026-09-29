@@ -1,4 +1,4 @@
-# gycrosskit/toast
+# GY CrossKit Toast
 
 Android、iOS、HarmonyOS 共用的短消息出口。新消息替换旧消息；文案由应用本地化。KMP 的 `MessagePlatform` 是业务入口，CMP 使用 `toast-cmp` 的 CompositionLocal，鸿蒙 Kuikly 使用 `toast-kuikly` 的 Module。原生展示分别在 Android AAR、iOS `GycToastNative` 和鸿蒙 `@gycrosskit/toast-native` HAR。
 
@@ -32,7 +32,7 @@ pod 'GycToastNative', :git => 'https://github.com/gycrosskit/toast.git', :tag =>
 
 ## 鸿蒙原生依赖
 
-`ohos/toast-native` 构建为 HAR，使用 API 18 起提供的 `PromptAction.openToast/closeToast`。发布到 ohpm 后，以 `"@gycrosskit/toast-native": "0.1.2"` 引入，并注册 `GycToastModule`。Kuikly 的 `toast-kuikly` KLIB 仍通过 Gradle/JitPack 获取。HAR 发布需要 ohpm 仓库的 `@gycrosskit` 命名空间和发布凭据；在发布前可用本地 HAR 验证，不能将本地路径作为最终远程依赖。
+`ohos/toast-native` 构建为 HAR，使用 API 18 起提供的 `PromptAction.openToast/closeToast`。目标版本为 `0.1.2`；先确认 ohpm 审核通过且能从仓库查询，再以 `"@gycrosskit/toast-native": "0.1.2"` 引入并注册 `GycToastModule`。Kuikly 的 `toast-kuikly` KLIB 仍通过 Gradle/JitPack 获取。发布前可用本地 HAR 验证，但不能将本地路径作为最终远程依赖。
 
 JitPack 提供 Maven 产物，不能替代 Swift Package 的 Git 标签或鸿蒙 ohpm 的 HAR 分发。
 
