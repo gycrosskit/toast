@@ -7,12 +7,13 @@ Android、iOS、HarmonyOS 共用的短消息出口。新消息替换旧消息；
 ```kotlin
 // settings.gradle.kts
 dependencyResolutionManagement {
-    repositories { maven { url = uri("https://gycrosskit.github.io/toast/maven") } }
+    repositories { maven { url = uri("https://jitpack.io") } }
 }
 
 // commonMain.dependencies
-implementation("io.github.gycrosskit:toast:0.1.0")
-// CMP 宿主另外引入 toast-cmp；Kuikly 宿主另外引入 toast-kuikly
+implementation("com.github.gycrosskit.toast:toast:0.1.1")
+// CMP 宿主另外引入 com.github.gycrosskit.toast:toast-cmp:0.1.1
+// Kuikly 宿主另外引入 com.github.gycrosskit.toast:toast-kuikly:0.1.1
 ```
 
 CMP 在应用根部 `ProvideMessagePlatform(platform)`；页面调用 `rememberMessages().show("...")`。Android 宿主使用 `AndroidMessagePlatform.get(applicationContext)`，两个 UI 引擎必须复用这一实例。iOS 宿主使用 `IosMessagePlatform(bridge)`，Swift bridge 转发给 `GycToastPresenter.shared.show`。
@@ -21,28 +22,28 @@ CMP 在应用根部 `ProvideMessagePlatform(platform)`；页面调用 `rememberM
 
 ## iOS 原生依赖
 
-纯 Swift 工程可通过 Xcode 的 Swift Package Dependencies 添加 `https://github.com/gycrosskit/toast.git`，选择版本 `0.1.0`，产品为 `GycToastNative`。使用 CocoaPods 的宿主可写：
+纯 Swift 工程可通过 Xcode 的 Swift Package Dependencies 添加 `https://github.com/gycrosskit/toast.git`，选择版本 `0.1.1`，产品为 `GycToastNative`。使用 CocoaPods 的宿主可写：
 
 ```ruby
-pod 'GycToastNative', :git => 'https://github.com/gycrosskit/toast.git', :tag => '0.1.0'
+pod 'GycToastNative', :git => 'https://github.com/gycrosskit/toast.git', :tag => '0.1.1'
 ```
 
 在稳定的根 UIViewController 创建后调用 `GycToastPresenter.shared.bind(rootController:)`；组件使用独立、不可点击的 UIWindow，不依附临时 dialog window。CMP 的 iOS KLIB 仍通过 Gradle/Maven 获取。
 
 ## 鸿蒙原生依赖
 
-`ohos/toast-native` 构建为 HAR，使用 API 18 起提供的 `PromptAction.openToast/closeToast`。发布到 ohpm 后，以 `"@gycrosskit/toast-native": "0.1.0"` 引入，并注册 `GycToastModule`。Kuikly 的 `toast-kuikly` KLIB 仍通过 Gradle/Maven 获取。HAR 发布需要 ohpm 仓库的 `@gycrosskit` 命名空间和发布凭据；在发布前可用本地 HAR 验证，不能将本地路径作为最终远程依赖。
+`ohos/toast-native` 构建为 HAR，使用 API 18 起提供的 `PromptAction.openToast/closeToast`。发布到 ohpm 后，以 `"@gycrosskit/toast-native": "0.1.1"` 引入，并注册 `GycToastModule`。Kuikly 的 `toast-kuikly` KLIB 仍通过 Gradle/JitPack 获取。HAR 发布需要 ohpm 仓库的 `@gycrosskit` 命名空间和发布凭据；在发布前可用本地 HAR 验证，不能将本地路径作为最终远程依赖。
 
 JitPack 提供 Maven 产物，不能替代 Swift Package 的 Git 标签或鸿蒙 ohpm 的 HAR 分发。
 
 ## 构建
 
 ```bash
-VERSION=0.1.0 bash gradlew publishToMavenLocal
+VERSION=0.1.1 bash gradlew publishToMavenLocal
 xcodebuild -scheme GycToastNative -destination 'generic/platform=iOS Simulator' -sdk iphonesimulator build CODE_SIGNING_ALLOWED=NO
 cd ohos && DEVECO_SDK_HOME=/Applications/DevEco-Studio.app/Contents/sdk /Applications/DevEco-Studio.app/Contents/tools/hvigor/bin/hvigorw assembleHar --no-daemon
 ```
 
-Maven 产物在 `docs/maven`，由 GitHub Pages 提供。发布新版本时同步更新 Gradle 版本、podspec 版本、oh-package 版本和 Git 标签。
+KMP Maven 产物由 JitPack 按 Git 标签构建。发布新版本时同步更新 podspec 版本、oh-package 版本和 Git 标签。
 
 Apache-2.0，见 [LICENSE](LICENSE)。
