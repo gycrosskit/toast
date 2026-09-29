@@ -3,7 +3,11 @@
   "version": "0.1.0",
   "description": "Native HarmonyOS toast presenter and Kuikly module",
   "main": "Index.ets",
-  "author": "gycrosskit",
+  "author": {
+    "name": "gycrosskit",
+    "url": "https://github.com/gycrosskit/toast"
+  },
+  "repository": "https://github.com/gycrosskit/toast",
   "license": "Apache-2.0",
   "dependencies": { "@kuikly-open/render": "2.28.0" }
 }
