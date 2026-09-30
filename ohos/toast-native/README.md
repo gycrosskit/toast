@@ -1,16 +1,18 @@
 # @gycrosskit/toast-native
 
-HarmonyOS 原生 Toast 展示组件，新消息会替换旧消息。原生 ArkTS 可调用导出的 `GycToastPresenter`；`GycToastModule` 用于对接 Kuikly。
-
-以下安装命令需在目标版本通过 ohpm 审核并可从仓库查询后使用。上架状态以 ohpm 查询结果为准。
+新消息替换旧消息的 HarmonyOS 短消息展示。当前 HAR target/compatible SDK 为 HarmonyOS API 22。
 
 ```sh
-ohpm install @gycrosskit/toast-native
+ohpm install @gycrosskit/toast-native@0.1.2
 ```
 
-```ts
-import { GycToastModule } from '@gycrosskit/toast-native';
-modules.set(GycToastModule.MODULE_NAME, () => new GycToastModule());
+```typescript
+import { GycToastPresenter } from '@gycrosskit/toast-native';
+GycToastPresenter.shared.show(context, '操作完成');
 ```
 
-采用 Apache-2.0 许可证。源码：[gycrosskit/toast](https://github.com/gycrosskit/toast)。
+context 为主窗口已创建的 UIAbilityContext。文案由宿主本地化，不申请额外权限；无消息队列或交互。Kuikly 可注册 GycToastModule。openToast/closeToast 接口从 API 18 起提供，当前 HAR 的 compatible SDK 为 API 22。
+
+[完整接入指南](https://github.com/gycrosskit/toast/blob/main/docs/接入指南.md) · [开发与验证](https://github.com/gycrosskit/toast/blob/main/docs/开发与验证.md) · [版本](https://github.com/gycrosskit/toast/releases) · [问题反馈](https://github.com/gycrosskit/toast/issues)。
+
+Apache-2.0，见 [LICENSE](LICENSE)。

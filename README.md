@@ -1,60 +1,85 @@
 # GY CrossKit Toast
 
-Android、iOS、HarmonyOS 共用的短消息出口。新消息替换旧消息；文案由应用本地化。KMP 的 `MessagePlatform` 是业务入口，CMP 使用 `toast-cmp` 的 CompositionLocal，鸿蒙 Kuikly 使用 `toast-kuikly` 的 Module。原生展示分别在 Android AAR、iOS `GycToastNative` 和鸿蒙 `@gycrosskit/toast-native` HAR。
+Android、iOS 和 HarmonyOS 的短消息展示。新消息替换旧消息；文案和本地化由宿主提供。KMP 入口为 `MessagePlatform`，CMP 提供 CompositionLocal，HarmonyOS Kuikly 提供 Module。
 
-## 平台与目录
+## 平台与要求
 
-| 平台 | KMP 模块 | 原生工程与分发 |
+| 平台 | 接入方式 | 系统要求 |
 | --- | --- | --- |
-| Android | [`toast-core`](toast-core)、[`toast-cmp`](toast-cmp) | [`androidApp`](androidApp) 是可运行的 Android 示例；AAR 经 JitPack 发布 |
-| iOS | [`toast-core`](toast-core)、[`toast-cmp`](toast-cmp) | [`iosApp`](iosApp) 提供 Swift Package / CocoaPods 源码；KMP 产物经 JitPack 发布 |
-| HarmonyOS | [`toast-core`](toast-core)、[`toast-kuikly`](toast-kuikly) | [`ohos/toast-native`](ohos/toast-native) 为 HAR，经 ohpm 发布；KMP 产物经 JitPack 发布 |
+| Android | `toast`，可选 `toast-cmp` | API 24+ |
+| iOS | KMP bridge + `GycToastNative`，或直接 Swift Package/CocoaPods | iOS 15+，Swift tools 5.9 |
+| HarmonyOS | `toast-kuikly` + `toast-native` HAR，或直接 ArkTS | 当前 HAR 的 target/compatible SDK 均为 API 22；`openToast/closeToast` API 本身从 API 18 提供 |
 
-`toast-core/` 对应 Gradle 模块 `:toast`，继续使用原有 Maven 坐标；平台代码位于各模块的对应 source set。
+KMP 使用 Kotlin `2.2.21-1.0.0`，CMP 使用 Compose `1.10.3`，Kuikly 使用 `2.28.0-2.0.21-ohos`。`toast-core/` 的 Gradle 模块名及公开 Maven artifact 为 `toast`。
 
-## KMP
+## 安装
 
 ```kotlin
 // settings.gradle.kts
 dependencyResolutionManagement {
-    repositories { maven { url = uri("https://jitpack.io") } }
+    repositories {
+        maven("https://jitpack.io")
+        maven("https://maven.eazytec-cloud.com/nexus/repository/maven-public/")
+        google()
+        mavenCentral()
+    }
 }
-
-// commonMain.dependencies
-implementation("com.github.gycrosskit.toast:toast:0.1.2")
-// CMP 宿主另外引入 com.github.gycrosskit.toast:toast-cmp:0.1.2
-// Kuikly 宿主另外引入 com.github.gycrosskit.toast:toast-kuikly:0.1.2
 ```
 
-CMP 在应用根部 `ProvideMessagePlatform(platform)`；页面调用 `rememberMessages().show("...")`。Android 宿主使用 `AndroidMessagePlatform.get(applicationContext)`，两个 UI 引擎必须复用这一实例。iOS 宿主使用 `IosMessagePlatform(bridge)`，Swift bridge 转发给 `GycToastPresenter.shared.show`。
-
-当前 KMP 产物为鸿蒙目标使用 Kuikly Kotlin `2.2.21-1.0.0` 编译。接入工程需在 Gradle `pluginManagement` 与依赖仓库中包含 `https://maven.eazytec-cloud.com/nexus/repository/maven-public/`，并使用兼容的 Kotlin/Kuikly 版本。
-
-## iOS 原生依赖
-
-纯 Swift 工程可通过 Xcode 的 Swift Package Dependencies 添加 `https://github.com/gycrosskit/toast.git`，选择版本 `0.1.2`，产品为 `GycToastNative`。使用 CocoaPods 的宿主可写：
-
-```ruby
-pod 'GycToastNative', :git => 'https://github.com/gycrosskit/toast.git', :tag => '0.1.2'
+```kotlin
+commonMain.dependencies {
+    implementation("com.github.gycrosskit.toast:toast:0.1.2")
+    // Compose Multiplatform 宿主额外添加：
+    implementation("com.github.gycrosskit.toast:toast-cmp:0.1.2")
+}
+// HarmonyOS Kuikly 宿主额外添加：
+ohosArm64Main.dependencies {
+    implementation("com.github.gycrosskit.toast:toast-kuikly:0.1.2")
+}
 ```
 
-在稳定的根 UIViewController 创建后调用 `GycToastPresenter.shared.bind(rootController:)`；组件使用独立、不可点击的 UIWindow，不依附临时 dialog window。CMP 的 iOS KLIB 仍通过 Gradle/Maven 获取。
+iOS 在 Xcode 的 Package Dependencies 添加 `https://github.com/gycrosskit/toast.git`，选择精确版本 `0.1.2`，产品 `GycToastNative`。CocoaPods 可按 Git tag 安装，见接入指南。
 
-## 鸿蒙原生依赖
+HarmonyOS 原生包独立安装：
 
-`ohos/toast-native` 构建为 HAR，使用 API 18 起提供的 `PromptAction.openToast/closeToast`。目标版本为 `0.1.2`；先确认 ohpm 审核通过且能从仓库查询，再以 `"@gycrosskit/toast-native": "0.1.2"` 引入并注册 `GycToastModule`。Kuikly 的 `toast-kuikly` KLIB 仍通过 Gradle/JitPack 获取。发布前可用本地 HAR 验证，但不能将本地路径作为最终远程依赖。
-
-JitPack 提供 Maven 产物，不能替代 Swift Package 的 Git 标签或鸿蒙 ohpm 的 HAR 分发。
-
-## 构建
-
-```bash
-VERSION=0.1.2 bash gradlew publishToMavenLocal
-ANDROID_HOME=/path/to/android-sdk bash gradlew :androidApp:assembleDebug
-xcodebuild -scheme GycToastNative -destination 'generic/platform=iOS Simulator' -sdk iphonesimulator build CODE_SIGNING_ALLOWED=NO
-cd ohos && DEVECO_SDK_HOME=/Applications/DevEco-Studio.app/Contents/sdk /Applications/DevEco-Studio.app/Contents/tools/hvigor/bin/hvigorw assembleHar --no-daemon
+```sh
+ohpm install @gycrosskit/toast-native@0.1.2
 ```
 
-KMP Maven 产物由 JitPack 按 Git 标签构建。发布新版本时同步更新 podspec 版本、oh-package 版本和 Git 标签。
+`0.1.2` 有 Git tag、JitPack Maven 和 OHPM 包；仓库目前没有 GitHub Release 条目。Swift Package 由该 Git tag 提供，不能用 Release 是否存在判断其可用性。
+
+## 最小使用
+
+```kotlin
+import io.github.gycrosskit.toast.*
+import io.github.gycrosskit.toast.cmp.*
+
+// Android：在应用范围复用同一个实例。
+val messages = AndroidMessagePlatform.get(applicationContext)
+messages.show("操作完成")
+// 在 Compose 应用根部：
+ProvideMessagePlatform(messages) {
+    // 页面内可调用 rememberMessages().show("操作完成")。
+}
+```
+
+```swift
+import GycToastNative
+// 稳定的根 UIViewController 创建后绑定：
+GycToastPresenter.shared.bind(rootController: rootController)
+GycToastPresenter.shared.show(message: "操作完成")
+```
+
+## 生命周期与边界
+
+Android 的不同 UI 引擎复用 `AndroidMessagePlatform.get(applicationContext)`，避免各自展示竞争。iOS 使用不可点击的独立 UIWindow，需要有效根控制器；KMP 宿主通过 `IosMessageBridge` 转发到原生 presenter。HarmonyOS 需要已创建主窗口的 UIAbilityContext 或注册 `GycToastModule`。
+
+无需额外系统权限。空白文案不展示；仅支持短/长时长和新消息替换，不提供消息队列或交互式提示。原生窗口显示、替换和多窗口行为仍需宿主设备验收。
+
+## 文档与帮助
+
+- [接入指南](docs/接入指南.md)：平台初始化、权限声明和生命周期。
+- [开发与验证](docs/开发与验证.md)：源码构建、检查命令与验收范围。
+- [版本与发行说明](https://github.com/gycrosskit/toast/releases)、[问题反馈](https://github.com/gycrosskit/toast/issues)。
 
 Apache-2.0，见 [LICENSE](LICENSE)。
