@@ -3,8 +3,10 @@
 新消息替换旧消息的 HarmonyOS 短消息展示。当前 HAR target/compatible SDK 为 HarmonyOS API 22。
 
 ```sh
-ohpm install @gycrosskit/toast-native@0.1.2
+ohpm install @gycrosskit/toast-native@0.1.3
 ```
+
+0.1.3 为候选，OHPM next 提交已接受、仍在审核；精确版本 Registry 查询/安装曾返回 NOTFOUND。审核通过并可查询后再运行上述安装命令，稳定 latest 保留 0.1.2。Release HAR 的下载与编译状态独立记录在仓库 README。
 
 ```typescript
 import { GycToastPresenter } from '@gycrosskit/toast-native';
