@@ -2,6 +2,8 @@
 
 Android、iOS 和 HarmonyOS 的短消息展示。新消息替换旧消息；文案和本地化由宿主提供。KMP 入口为 `MessagePlatform`，CMP 提供 CompositionLocal，HarmonyOS Kuikly 提供 Module。
 
+本轮 Maven/Swift/Git Pod/HAR 候选为 0.1.3，安装示例使用候选精确版本；当前待发布与远程验收，稳定 Registry `latest` 为 0.1.2。候选计划以 prerelease/OHPM `next` 提交，不覆盖稳定基线。
+
 ## 平台与要求
 
 | 平台 | 接入方式 | 系统要求 |
@@ -28,22 +30,22 @@ dependencyResolutionManagement {
 
 ```kotlin
 commonMain.dependencies {
-    implementation("com.github.gycrosskit.toast:toast:0.1.2")
+    implementation("com.github.gycrosskit.toast:toast:0.1.3")
     // Compose Multiplatform 宿主额外添加：
-    implementation("com.github.gycrosskit.toast:toast-cmp:0.1.2")
+    implementation("com.github.gycrosskit.toast:toast-cmp:0.1.3")
 }
 // HarmonyOS Kuikly 宿主额外添加：
 ohosArm64Main.dependencies {
-    implementation("com.github.gycrosskit.toast:toast-kuikly:0.1.2")
+    implementation("com.github.gycrosskit.toast:toast-kuikly:0.1.3")
 }
 ```
 
-iOS 在 Xcode 的 Package Dependencies 添加 `https://github.com/gycrosskit/toast.git`，选择精确版本 `0.1.2`，产品 `GycToastNative`。CocoaPods 可按 Git tag 安装，见接入指南。
+iOS 在 Xcode 的 Package Dependencies 添加 `https://github.com/gycrosskit/toast.git`，候选发布后选择精确版本 `0.1.3`，产品 `GycToastNative`。CocoaPods 可按 Git tag 安装，见接入指南。
 
-HarmonyOS 原生包独立安装：
+HarmonyOS 原生包独立安装，候选正式可查询后执行；发布接受与 Registry 可安装分别核验：
 
 ```sh
-ohpm install @gycrosskit/toast-native@0.1.2
+ohpm install @gycrosskit/toast-native@0.1.3
 ```
 
 `0.1.2` 有 Git tag、JitPack Maven 和 OHPM 包；仓库目前没有 GitHub Release 条目。Swift Package 由该 Git tag 提供，不能用 Release 是否存在判断其可用性。
@@ -83,3 +85,10 @@ Android 的不同 UI 引擎复用 `AndroidMessagePlatform.get(applicationContext
 - [版本与发行说明](https://github.com/gycrosskit/toast/releases)、[问题反馈](https://github.com/gycrosskit/toast/issues)。
 
 Apache-2.0，见 [LICENSE](LICENSE)。
+
+## 0.1.3 候选：Kuikly 页面生命周期（待发布）
+
+每个 Pager 注册组件 `ToastModule` 和原生 `GycToastModule`，业务只映射消息文案/时长；`pageWillDestroy` 调用 `ToastModule.dispose()`，原生 `onDestroy` 后拒绝消息。
+不再把showMessage协议复制到应用的系统动作Module；已显示Toast仍由唯一presenter管理，不由旧Page销毁新Page消息。
+
+候选 Maven 的 core/CMP/Kuikly 坐标均显式选择 0.1.3，HAR 为 `@gycrosskit/toast-native@0.1.3`。计划使用 prerelease 与 OHPM `next`，保留稳定 `latest`；本地 staging 不代表远程可安装。

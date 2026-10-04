@@ -4,10 +4,12 @@ import { GycToastPresenter } from './GycToastPresenter';
 /** Kuikly transport only; native presentation is owned by GycToastPresenter. */
 export class GycToastModule extends KuiklyRenderBaseModule {
   static readonly MODULE_NAME: string = 'GycToastModule';
+  private destroyed: boolean = false;
 
   syncMode(): boolean { return false; }
 
   call(method: string, params: KRAny, _callback: KuiklyRenderCallback | null): KRAny {
+    if (this.destroyed) return null;
     if (method !== 'show' || typeof params !== 'string') return null;
     const context = this.controller?.getUIAbilityContext();
     if (!context) return null;
@@ -18,5 +20,10 @@ export class GycToastModule extends KuiklyRenderBaseModule {
       }
     } catch (_) { /* Ignore malformed bridge input. */ }
     return null;
+  }
+
+  onDestroy(): void {
+    this.destroyed = true;
+    super.onDestroy();
   }
 }
