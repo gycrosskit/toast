@@ -50,7 +50,7 @@ HarmonyOS 原生包独立安装，候选正式可查询后执行；发布接受�
 ohpm install @gycrosskit/toast-native@0.1.3
 ```
 
-旧稳定 `0.1.2` 有 Git tag、JitPack Maven 和 OHPM 包，未补写旧 Release。新候选 `0.1.3` 已有 Git tag/prerelease；Swift Package 和 Git Pod 由不可变 tag 提供，其独立真实原生消费者待复验，KMP framework 链接不代替这两个渠道的消费验证。
+旧稳定 `0.1.2` 有 Git tag、JitPack Maven 和 OHPM 包，未补写旧 Release。新候选 `0.1.3` 的 Swift Package 和 Git Pod 已分别完成独立真实原生消费：公开 API 编译及动态消费者/framework 最终链接均通过，产物为 arm64/x86_64 iOS Simulator Mach-O。SPM 锁定发布提交，Git Pod framework 版本为 0.1.3；这两个渠道单独验收，不以 KMP framework 链接代替。
 
 ## 最小使用
 
