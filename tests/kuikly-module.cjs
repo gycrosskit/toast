@@ -18,8 +18,9 @@ function load(name, dependencies) {
   const prompt = {
     openToast(options) {
       let finish;
-      const result = new Promise(resolve => { finish = resolve; });
-      opens.push({ options, finish });
+      let fail;
+      const result = new Promise((resolve, reject) => { finish = resolve; fail = reject; });
+      opens.push({ options, finish, fail });
       return result;
     },
     closeToast(id) { closes.push(id); }
@@ -72,5 +73,19 @@ function load(name, dependencies) {
   show(unavailable, 'no context');
   await flush();
   assert.equal(opens.length, 2);
+  const recovery = new GycToastModule();
+  show(recovery, 'SDK failure');
+  await flush();
+  assert.equal(opens.length, 3);
+  opens[2].fail(Error('openToast refused'));
+  await flush();
+  show(recovery, 'superseded before open');
+  show(recovery, 'recovered');
+  await flush();
+  assert.equal(opens.length, 4, 'failed open must not block latest queued request');
+  assert.equal(opens[3].options.message, 'recovered');
+  opens[3].finish(3);
+  await flush();
+  recovery.onDestroy();
   console.log('Toast bridge/presenter: malformed input, durations, late open replacement and destroyed-page ownership passed');
 })().catch(error => { console.error(error); process.exitCode = 1; });

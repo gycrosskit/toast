@@ -1,7 +1,8 @@
 import UIKit
 
-/// A scene-level toast presenter shared by Compose and Kuikly bridges.
+/// CMP 与 Kuikly 共用的进程提示入口；UI 操作自动切到主线程，新提示替换旧提示。
 @objc public final class GycToastPresenter: NSObject {
+    /// 进程唯一 presenter，不持有业务控制器的强引用。
     @objc public static let shared = GycToastPresenter()
 
     private weak var rootController: UIViewController?
@@ -14,7 +15,8 @@ import UIKit
 
     private override init() { super.init() }
 
-    /// Bind to the app's stable root controller, never a transient dialog controller.
+    /// 弱绑定稳定根控制器，用其 WindowScene 展示；可从任意线程调用，不绑定临时弹窗。
+    /// - Parameter rootController: 宿主当前 Scene 的稳定根控制器。
     @objc public func bind(rootController: UIViewController) {
         if Thread.isMainThread {
             self.rootController = rootController
@@ -25,6 +27,10 @@ import UIKit
         }
     }
 
+    /// 忽略空白文本；新请求替换旧请求，短/长时长分别为 2/4 秒，可从任意线程调用。
+    /// - Parameters:
+    ///   - message: 宿主已本地化的文本，首尾空白会去除。
+    ///   - longDuration: 默认 false 使用短时长。
     @objc public func show(message: String, longDuration: Bool = false) {
         let text = message.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty else { return }
