@@ -10,7 +10,7 @@ if (verifyCmp) apply(plugin = "org.jetbrains.kotlin.plugin.compose")
 kotlin {
     androidTarget()
     iosArm64()
-    iosX64()
+    iosX64 { binaries.framework { baseName = "ToastConsumer" } }
     iosSimulatorArm64 { binaries.framework { baseName = "ToastConsumer" } }
     ohosArm64()
     sourceSets {
