@@ -32,6 +32,10 @@ class AndroidMessagePlatform private constructor(context: Context) : MessagePlat
     companion object {
         @Volatile private var instance: AndroidMessagePlatform? = null
 
+        /**
+         * 获取进程共用实例，只保留 applicationContext。
+         * @param context 用于解析应用 Context，不保留 Activity。
+         */
         fun get(context: Context): AndroidMessagePlatform =
             instance ?: synchronized(this) {
                 instance ?: AndroidMessagePlatform(context).also { instance = it }

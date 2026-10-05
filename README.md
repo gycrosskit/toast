@@ -16,6 +16,82 @@ OHPM `next` 提交已接受，仍在审核；精确版本查询及独立 Registr
 
 KMP 使用 Kotlin `2.2.21-1.0.0`，CMP 使用 Compose `1.10.3`，Kuikly 使用 `2.28.0-2.0.21-ohos`。`toast-core/` 的 Gradle 模块名及公开 Maven artifact 为 `toast`。
 
+## 架构与调用流程
+
+`toast` 定义 `MessagePlatform`，`toast-cmp` 只把宿主实例提供给 Compose 页面；`toast-kuikly` 转发消息。原生展示由平台实现负责，文案与本地化由宿主提供。
+
+```mermaid
+flowchart TB
+    Host[宿主] --> CMP[toast-cmp<br/>ProvideMessagePlatform]
+    CMP --> Core[toast<br/>MessagePlatform]
+    Host --> Core
+    Core --> Android[AndroidMessagePlatform<br/>系统 Toast]
+    Core --> IOS[IosMessagePlatform<br/>IosMessageBridge]
+    IOS --> Swift[GycToastNative<br/>GycToastPresenter]
+    Swift --> Window[UIKit<br/>独立 UIWindow]
+    Core --> Module[toast-kuikly<br/>ToastModule]
+    Module --> Native[HAR<br/>GycToastModule]
+    Native --> Presenter[HAR<br/>GycToastPresenter]
+    Presenter --> Prompt[PromptAction<br/>openToast / closeToast]
+```
+
+HarmonyOS 展示通过共享 presenter 串行处理替换。Kuikly 的 `show` 是无结果回调的异步转发，调用返回不表示消息已经显示。
+
+```mermaid
+sequenceDiagram
+    participant Host as 页面
+    participant Module as ToastModule
+    participant Native as GycToastModule
+    participant Presenter as 共享 presenter
+    participant System as PromptAction
+    Host->>Module: show(message, duration)
+    Module->>Module: 检查状态与文案
+    Module->>Native: show（无回调）
+    Native->>Presenter: show
+    Presenter->>Presenter: 更新代次，串行处理
+    Presenter->>System: closeToast（旧消息）
+    Presenter->>System: openToast
+    System-->>Presenter: toast id
+    alt 展示期间出现更新请求
+        Presenter->>System: closeToast（迟到消息）
+    else 仍为最新请求
+        Presenter->>Presenter: 保存展示状态
+    end
+    Note over Host,Native: dispose 只阻止新转发
+    Note over Presenter,System: 已显示消息归共享 presenter 管理
+```
+
+类图聚焦 KMP 契约及 bridge；CMP 的 `ProvideMessagePlatform`、`rememberMessages` 是函数，不是额外 Manager 类。
+
+```mermaid
+classDiagram
+    class MessagePlatform {
+        <<interface>>
+        +show(message, duration)
+    }
+    class AppMessageDuration {
+        <<enumeration>>
+    }
+    class AndroidMessagePlatform {
+        +get(context) AndroidMessagePlatform
+    }
+    class IosMessagePlatform
+    class IosMessageBridge {
+        <<interface>>
+        +showMessage(message, longDuration)
+    }
+    class ToastModule {
+        +dispose()
+    }
+    MessagePlatform <|.. AndroidMessagePlatform
+    MessagePlatform <|.. IosMessagePlatform
+    MessagePlatform <|.. ToastModule
+    MessagePlatform ..> AppMessageDuration : 输入
+    IosMessagePlatform --> IosMessageBridge : 持有
+```
+
+源码：[MessagePlatform 与时长](toast-core/src/commonMain/kotlin/io/github/gycrosskit/toast/MessagePlatform.kt)、[Android 实现](toast-core/src/androidMain/kotlin/io/github/gycrosskit/toast/AndroidMessagePlatform.kt)、[iOS 实现与 bridge](toast-core/src/iosMain/kotlin/io/github/gycrosskit/toast/IosMessagePlatform.kt)、[CMP 接线](toast-cmp/src/commonMain/kotlin/io/github/gycrosskit/toast/cmp/MessageComposition.kt)、[ToastModule](toast-kuikly/src/commonMain/kotlin/io/github/gycrosskit/toast/kuikly/ToastModule.kt)、[HAR Module](ohos/toast-native/src/main/ets/GycToastModule.ets)、[HAR Presenter](ohos/toast-native/src/main/ets/GycToastPresenter.ets)、[Swift Presenter](iosApp/Sources/GycToastNative/ToastPresenter.swift)。
+
 ## 安装
 
 ```kotlin

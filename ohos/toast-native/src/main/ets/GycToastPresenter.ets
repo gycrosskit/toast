@@ -1,8 +1,9 @@
 import { common } from '@kit.AbilityKit';
 import { PromptAction } from '@kit.ArkUI';
 
-/** One presenter per app process; a later request replaces the current toast. */
+/** 进程共用 presenter；UIAbility 主线程调用，串行关闭旧提示并展示最新请求。 */
 export class GycToastPresenter {
+  /** 进程唯一入口，CMP 与 Kuikly 共用。 */
   static readonly shared: GycToastPresenter = new GycToastPresenter();
 
   private generation: number = 0;
@@ -10,6 +11,12 @@ export class GycToastPresenter {
   private activePrompt: PromptAction | null = null;
   private pending: Promise<void> = Promise.resolve();
 
+  /**
+   * 空白文案忽略；open/close 失败不阻塞后续请求。
+   * @param context 当前 UIAbility；通过其 Window 的 PromptAction 展示。
+   * @param message 已本地化文本，首尾空白会去除。
+   * @param longDuration 默认 false，短/长时长分别为 2000/3500 毫秒。
+   */
   show(context: common.UIAbilityContext, message: string, longDuration: boolean = false): void {
     const text = message.trim();
     if (!text) return;

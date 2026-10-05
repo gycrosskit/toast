@@ -13,10 +13,11 @@ class IosMessagePlatformTest {
             }
         })
 
-        platform.show("  ", AppMessageDuration.SHORT)
+        platform.show("  \n\t", AppMessageDuration.SHORT)
         platform.show(" 短提示 ", AppMessageDuration.SHORT)
         platform.show("长提示", AppMessageDuration.LONG)
+        platform.show(" 默认提示 ")
 
-        assertEquals(listOf("短提示" to false, "长提示" to true), calls)
+        assertEquals(listOf("短提示" to false, "长提示" to true, "默认提示" to false), calls)
     }
 }

@@ -20,9 +20,10 @@ class ToastModule : Module(), MessagePlatform {
         }, null)
     }
 
+    /** 页面销毁时在 Kuikly Context 调用；幂等，后续 show 忽略，不关闭其他页面提示。 */
     fun dispose() {
         disposed = true
     }
 
-    companion object { const val NAME = "GycToastModule" }
+    companion object { /** 与原生注册名一致的桥名称。 */ const val NAME = "GycToastModule" }
 }

@@ -1,8 +1,9 @@
 import { KRAny, KuiklyRenderBaseModule, KuiklyRenderCallback } from '@kuikly-open/render';
 import { GycToastPresenter } from './GycToastPresenter';
 
-/** Kuikly transport only; native presentation is owned by GycToastPresenter. */
+/** 每页的 Kuikly 提示桥；只转发 show，销毁后忽略请求，原生展示归 presenter 所有。 */
 export class GycToastModule extends KuiklyRenderBaseModule {
+  /** 原生注册名，与 Kotlin ToastModule.NAME 一致。 */
   static readonly MODULE_NAME: string = 'GycToastModule';
   private destroyed: boolean = false;
 

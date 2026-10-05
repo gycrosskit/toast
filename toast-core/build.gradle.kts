@@ -15,6 +15,7 @@ kotlin {
     ohosArm64()
     sourceSets {
         commonTest.dependencies { implementation(kotlin("test")) }
+        androidUnitTest.dependencies { implementation("org.robolectric:robolectric:4.16.1") }
     }
 }
 
