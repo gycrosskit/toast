@@ -112,4 +112,5 @@ jobs:
             x86_64) native_target=IosX64; native_test=iosX64Test ;;
             *) echo "Unsupported macOS architecture" >&2; exit 1 ;;
           esac
-          bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" -p verification linkDebugFramework${native_target} compileKotlinOhosArm64 -PtoastVersion="$VERSION" -PverifyCmp=true --refresh-dependencies --no-daemon --max-workers=1
+          bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" -p verification linkDebugFramework${native_target} -PtoastVersion="$VERSION" -PverifyCmp=true --refresh-dependencies --no-daemon --max-workers=1
+          bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" -p verification compileKotlinOhosArm64 -PtoastVersion="$VERSION" --refresh-dependencies --no-daemon --max-workers=1
