@@ -170,3 +170,5 @@ Apache-2.0，见 [LICENSE](LICENSE)。
 不再把showMessage协议复制到应用的系统动作Module；已显示Toast仍由唯一presenter管理，不由旧Page销毁新Page消息。
 
 候选 Maven 的 core/CMP/Kuikly 坐标均显式选择 0.1.3，HAR 为 `@gycrosskit/toast-native@0.1.3`。Maven 已完成远程文件校验，OHPM 可安装性按上方独立状态记录。
+
+本轮全生产文件覆盖与未测项见[完整源码审查](docs/完整源码审查.md)。
