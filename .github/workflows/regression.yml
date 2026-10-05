@@ -15,7 +15,11 @@ permissions:
   contents: read
 # JVM 启动前设置；Gradle init 时 DNS 策略可能已初始化，不能在那时才改。
 env:
-  JAVA_TOOL_OPTIONS: -Djava.security.properties=${{ github.workspace }}/scripts/ci-java.security
+  # 为 URLConnection 下载设置等待上限；失败仍使真实构建/测试门禁失败。
+  JAVA_TOOL_OPTIONS: >-
+    -Djava.security.properties=${{ github.workspace }}/scripts/ci-java.security
+    -Dsun.net.client.defaultConnectTimeout=30000
+    -Dsun.net.client.defaultReadTimeout=60000
 concurrency:
   group: regression-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
@@ -47,7 +51,7 @@ jobs:
           java-version: '17'
           cache: gradle
       - run: test -f "$ANDROID_HOME/platforms/android-36/android.jar"
-      - run: bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" :toast:testDebugUnitTest :toast:compileDebugKotlinAndroid :toast-cmp:compileDebugKotlinAndroid --no-daemon --max-workers=1
+      - run: bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info :toast:testDebugUnitTest :toast:compileDebugKotlinAndroid :toast-cmp:compileDebugKotlinAndroid --no-daemon --max-workers=1
   native:
     runs-on: macos-15
     timeout-minutes: 60
@@ -66,7 +70,7 @@ jobs:
             x86_64) native_target=IosX64; native_test=iosX64Test ;;
             *) echo "Unsupported macOS architecture" >&2; exit 1 ;;
           esac
-          bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" :toast:compileKotlinIosArm64 :toast:compileKotlin${native_target} :toast-cmp:compileKotlin${native_target} :toast:${native_test} :toast:compileKotlinOhosArm64 :toast-kuikly:compileKotlinOhosArm64 --no-daemon --max-workers=1
+          bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info :toast:compileKotlinIosArm64 :toast:compileKotlin${native_target} :toast-cmp:compileKotlin${native_target} :toast:${native_test} :toast:compileKotlinOhosArm64 :toast-kuikly:compileKotlinOhosArm64 --no-daemon --max-workers=1
           python3 - "toast-core/build/test-results/$native_test" <<'TEST_RESULTS'
           import sys, xml.etree.ElementTree as ET
           from pathlib import Path
@@ -96,7 +100,7 @@ jobs:
           cache: gradle
       - run: test -f "$ANDROID_HOME/platforms/android-36/android.jar"
       - run: bash scripts/ci-release.sh
-      - run: bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" -p verification compileDebugKotlinAndroid -PtoastVersion="$VERSION" -PverifyCmp=true --refresh-dependencies --no-daemon --max-workers=1
+      - run: bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info -p verification compileDebugKotlinAndroid -PtoastVersion="$VERSION" -PverifyCmp=true --refresh-dependencies --no-daemon --max-workers=1
   release-native:
     if: github.event_name == 'pull_request' || github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && inputs.version != '')
     runs-on: macos-15
@@ -119,5 +123,5 @@ jobs:
             x86_64) native_target=IosX64; native_test=iosX64Test ;;
             *) echo "Unsupported macOS architecture" >&2; exit 1 ;;
           esac
-          bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" -p verification linkDebugFramework${native_target} -PtoastVersion="$VERSION" -PverifyCmp=true --refresh-dependencies --no-daemon --max-workers=1
-          bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" -p verification compileKotlinOhosArm64 -PtoastVersion="$VERSION" --refresh-dependencies --no-daemon --max-workers=1
+          bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info -p verification linkDebugFramework${native_target} -PtoastVersion="$VERSION" -PverifyCmp=true --refresh-dependencies --no-daemon --max-workers=1
+          bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info -p verification compileKotlinOhosArm64 -PtoastVersion="$VERSION" --refresh-dependencies --no-daemon --max-workers=1
