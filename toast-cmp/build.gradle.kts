@@ -17,7 +17,8 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(project(":toast"))
-            implementation(libs.compose.runtime)
+            api(libs.compose.runtime)
+            api(libs.compose.foundation)
         }
     }
 }

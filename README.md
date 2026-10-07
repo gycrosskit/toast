@@ -1,5 +1,7 @@
 # GY CrossKit Toast
 
+当前源码新增[跨端行为候选](docs/跨端行为候选.md)，尚未发布；下方远程版本验收仍对应其既有不可变标签。
+
 Android、iOS 和 HarmonyOS 的短消息展示。新消息替换旧消息；文案和本地化由宿主提供。KMP 入口为 `MessagePlatform`，CMP 提供 CompositionLocal，HarmonyOS Kuikly 提供 Module。
 
 本轮 Maven/Swift/Git Pod/HAR 候选为 0.1.3，[prerelease 已发布](https://github.com/gycrosskit/toast/releases/tag/0.1.3)，实际下载 SHA 与 JitPack 全 13 个 module 的文件引用校验通过。独立真实 JitPack OHOS Kuikly、Android/iOS CMP 编译及 Simulator 最终链接、Release HAR 独立编译通过；安装示例使用候选精确版本，设备展示尚未验收。
