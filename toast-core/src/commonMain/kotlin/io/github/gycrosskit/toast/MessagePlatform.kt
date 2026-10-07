@@ -1,11 +1,11 @@
 package io.github.gycrosskit.toast
 
-/** 系统提示的时长档位；实际秒数由各原生 presenter 决定。 */
-enum class AppMessageDuration {
+/** 应用内 MessageHost 使用明确的毫秒数；legacy 原生提示仍受系统 Toast/presenter 控制。 */
+enum class AppMessageDuration(val milliseconds: Long) {
     /** 短提示，适合操作反馈。 */
-    SHORT,
+    SHORT(2_000),
     /** 长提示，适合需要更多阅读时间的文案。 */
-    LONG,
+    LONG(3_500),
 }
 
 /** 文案由调用方完成本地化；所有平台以新消息替换上一条。 */

@@ -149,7 +149,7 @@ import UIKit
 
     private static let animationDuration = 0.18
     private static let shortDuration = 2.0
-    private static let longDuration = 4.0
+    private static let longDuration = 3.5
 }
 
 private final class ToastOverlayWindow: UIWindow {

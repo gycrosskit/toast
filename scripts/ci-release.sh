@@ -23,5 +23,10 @@ EXTRACT
 python3 scripts/check-maven.py "$staging/maven" com.github.gycrosskit.toast "$VERSION" toast,toast-cmp,toast-kuikly ios_arm64,ios_x64,ios_simulator_arm64,ohos_arm64
 # 标签必须解析为不可变发布提交；不把当前 PR 的 SHA 当成已发布版本。
 commit="$(git ls-remote https://github.com/gycrosskit/toast.git "refs/tags/$VERSION" "refs/tags/$VERSION^{}" | awk '$2 ~ /\^\{\}$/ {peeled=$1} $2 !~ /\^\{\}$/ {direct=$1} END {print peeled ? peeled : direct}')"
+publications=toast,toast-android,toast-iosarm64,toast-iosx64,toast-iossimulatorarm64,toast-ohosarm64,toast-cmp,toast-cmp-android,toast-cmp-iosarm64,toast-cmp-iosx64,toast-cmp-iossimulatorarm64,toast-kuikly,toast-kuikly-ohosarm64
+# 0.1.3 归档只有 OHOS Kuikly；新标签精确检查新增的 Android/iOS publications。
+if [[ "$VERSION" != "0.1.3" ]]; then
+  publications+=,toast-kuikly-android,toast-kuikly-iosarm64,toast-kuikly-iosx64,toast-kuikly-iossimulatorarm64
+fi
 python3 scripts/check-public-maven.py --repo toast --version "$VERSION" --commit "$commit" \
-  --expected-publications toast,toast-android,toast-iosarm64,toast-iosx64,toast-iossimulatorarm64,toast-ohosarm64,toast-cmp,toast-cmp-android,toast-cmp-iosarm64,toast-cmp-iosx64,toast-cmp-iossimulatorarm64,toast-kuikly,toast-kuikly-ohosarm64 --output-dir "$staging/public"
+  --expected-publications "$publications" --output-dir "$staging/public"
