@@ -19,6 +19,7 @@ permissions:
   contents: read
 # JVM 启动前设置；Gradle init 时 DNS 策略可能已初始化，不能在那时才改。
 env:
+  CI_FORK_HOST_FALLBACK_IP: ${{ vars.CI_FORK_HOST_FALLBACK_IP }}
   # 为 URLConnection 下载设置等待上限；失败仍使真实构建/测试门禁失败。
   JAVA_TOOL_OPTIONS: >-
     -Djava.security.properties=${{ github.workspace }}/scripts/ci-java.security
@@ -122,6 +123,8 @@ jobs:
       - name: Explain lightweight completion
         if: ${{ !(needs.changes.outputs.source == 'true') }}
         run: echo 'No build is required for this event and scope.'
+      - name: Check fork host trust boundaries
+        run: python3 verification/ci/test_fork_host.py
       - name: Check CI shell syntax
         run: |
           PYTHONPYCACHEPREFIX="$RUNNER_TEMP/ci-python-cache" python3 -m py_compile scripts/ci-changes.py scripts/ci-run.py
@@ -160,6 +163,9 @@ jobs:
           cache: gradle
       - run: test -f "$ANDROID_HOME/platforms/android-36/android.jar"
         timeout-minutes: 35
+        if: needs.changes.outputs.source == 'true'
+      - run: bash scripts/ci-pin-fork-host.sh
+        timeout-minutes: 3
         if: needs.changes.outputs.source == 'true'
       - run: python3 scripts/ci-run.py --no-progress-seconds 300 --log ci-diagnostics/android.log -- bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info :toast:testDebugUnitTest :toast:compileDebugKotlinAndroid :toast-cmp:compileDebugKotlinAndroid :toast-kuikly:compileDebugKotlinAndroid --no-daemon --max-workers=1
         timeout-minutes: 35
@@ -215,6 +221,9 @@ jobs:
           distribution: temurin
           java-version: '17'
           cache: gradle
+      - run: bash scripts/ci-pin-fork-host.sh
+        timeout-minutes: 3
+        if: (needs.changes.outputs.source == 'true') || (github.event_name == 'workflow_dispatch' && inputs.warm_native_cache && github.ref == 'refs/heads/main')
       - timeout-minutes: 45
         if: needs.changes.outputs.source == 'true'
         run: |
@@ -297,6 +306,9 @@ jobs:
           cache: gradle
       - run: test -f "$ANDROID_HOME/platforms/android-36/android.jar"
         timeout-minutes: 35
+        if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && inputs.version != '')
+      - run: bash scripts/ci-pin-fork-host.sh
+        timeout-minutes: 3
         if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && inputs.version != '')
       - timeout-minutes: 35
         if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && inputs.version != '')
