@@ -4,15 +4,13 @@
 
 最终核对（2026-10-08）：本轮在正式WT重跑core5项；MessageHost参数仅源码核对，真实字体/多行/读屏未验。 逐项时点与边界见[验证范围](docs/功能与平台差异.md#sdk系统与真实验证范围)。
 
-当前源码版本为 0.1.5：Kuikly `MessageHost` 将背景和 padding 交给独立 Box，修复 Kuikly 2.28 文案靠上；共同状态、规格、定时替换和销毁合同不变。Maven/Swift 使用 0.1.5，鸿蒙原生 HAR 继续配套 0.1.3。0.1.5 的正式发布与远程消费结果以对应 Release 为准；下方 0.1.3 验证记录属于历史版本。
+当前源码版本为 0.1.5：Kuikly `MessageHost` 将背景和 padding 交给独立 Box，修复 Kuikly 2.28 文案靠上；共同状态、规格、定时替换和销毁合同不变。Maven/Swift 使用 0.1.5，鸿蒙原生 HAR 继续配套 0.1.3。0.1.5 的正式发布与远程消费结果以对应 Release 为准；链接中的 0.1.3 验证记录属于历史版本。
 
 CMP Android/iOS 与 Kuikly Compose Android/iOS/OHOS 的共同 Overlay 接线见[跨端行为说明](docs/跨端行为候选.md)。组件编译和远程解析不能代替宿主正常、暗色、长文案及真机居中验收。
 
 Android、iOS 和 HarmonyOS 的短消息展示。新消息替换旧消息；文案和本地化由宿主提供。KMP入口为 `MessagePlatform`；CMP与KuiklyCompose均提供CompositionLocal/MessageHost，legacy OHOS额外提供ToastModule。
 
-历史0.1.3轮次的Maven/Swift/Git Pod/HAR候选为0.1.3，[prerelease 已发布](https://github.com/gycrosskit/toast/releases/tag/0.1.3)，实际下载 SHA 与 JitPack 全 13 个 module 的文件引用校验通过。独立真实 JitPack OHOS Kuikly、Android/iOS CMP 编译及 Simulator 最终链接、Release HAR 独立编译通过；安装示例使用候选精确版本，设备展示尚未验收。
-
-历史0.1.3轮次的OHPM next提交接受后曾仍在审核，精确Registry安装返回NOTFOUND，当时latest为0.1.2；本次文档更新未重新查询Registry，不据历史状态断言当前可安装。Release HAR下载不代表Registry安装。
+历史 0.1.3 的 Maven/Swift/Git Pod/Release HAR 消费与 OHPM 审核、Registry NOTFOUND 记录见[候选验收](verification/候选验收.md)。本次未重查 Registry，当前可安装性须单独核验；Release HAR 下载不代表 Registry 安装。
 
 ## 平台与要求
 
@@ -162,24 +160,19 @@ GycToastPresenter.shared.show(message: "操作完成")
 
 Android 的不同 UI 引擎复用 `AndroidMessagePlatform.get(applicationContext)`，避免各自展示竞争。iOS 使用不可点击的独立 UIWindow，需要有效根控制器；KMP 宿主通过 `IosMessageBridge` 转发到原生 presenter。HarmonyOS 需要已创建主窗口的 UIAbilityContext 或注册 `GycToastModule`。
 
+每个 Pager 注册组件 `ToastModule` 和原生 `GycToastModule`，业务只映射消息文案/时长；`pageWillDestroy` 调用 `ToastModule.dispose()`，原生 `onDestroy` 后拒绝消息。
+不再把showMessage协议复制到应用的系统动作Module；已显示Toast仍由唯一presenter管理，不由旧Page销毁新Page消息。
+
 无需额外系统权限。空白文案不展示；仅支持短/长时长和新消息替换，不提供消息队列或交互式提示。原生窗口显示、替换和多窗口行为仍需宿主设备验收。
 
 ## 文档与帮助
 
 - [接入指南](docs/接入指南.md)：平台初始化、权限声明和生命周期。
 - [开发与验证](docs/开发与验证.md)：源码构建、检查命令与验收范围。
+- [完整源码审查](docs/完整源码审查.md)
 - [版本与发行说明](https://github.com/gycrosskit/toast/releases)、[问题反馈](https://github.com/gycrosskit/toast/issues)。
 
 Apache-2.0，见 [LICENSE](LICENSE)。
-
-## 0.1.3 候选：Kuikly 页面生命周期
-
-每个 Pager 注册组件 `ToastModule` 和原生 `GycToastModule`，业务只映射消息文案/时长；`pageWillDestroy` 调用 `ToastModule.dispose()`，原生 `onDestroy` 后拒绝消息。
-不再把showMessage协议复制到应用的系统动作Module；已显示Toast仍由唯一presenter管理，不由旧Page销毁新Page消息。
-
-候选 Maven 的 core/CMP/Kuikly 坐标均显式选择 0.1.3，HAR 为 `@gycrosskit/toast-native@0.1.3`。Maven 已完成远程文件校验，OHPM 可安装性按上方独立状态记录。
-
-本轮全生产文件覆盖与未测项见[完整源码审查](docs/完整源码审查.md)。
 
 ## 自动回归
 
