@@ -13,6 +13,18 @@ expected_version = sys.argv[3]
 expected_modules = set(sys.argv[4].split(","))
 expected_targets = set(sys.argv[5].split(","))
 
+# 缓存摘要而非二进制；不同 variant 的声明仍分别核对。
+file_digests = {}
+
+
+def digests(path):
+    if path not in file_digests:
+        content = path.read_bytes()
+        file_digests[path] = {algorithm: hashlib.new(algorithm, content).hexdigest()
+                              for algorithm in ('md5', 'sha1', 'sha256', 'sha512')}
+    return file_digests[path]
+
+
 def resolve_artifact(path):
     # Maven SNAPSHOT 元数据使用逻辑版本，磁盘文件使用时间戳版本。
     if not path.parent.name.endswith("-SNAPSHOT"):
@@ -44,7 +56,7 @@ for module in modules:
     for algorithm in ("md5", "sha1", "sha256", "sha512"):
         checksum = module.with_name(module.name + "." + algorithm)
         if checksum.exists():
-            assert checksum.read_text().strip() == hashlib.new(algorithm, module.read_bytes()).hexdigest(), checksum
+            assert checksum.read_text().strip() == digests(module)[algorithm], checksum
     pom = ET.parse(module.with_suffix(".pom")).getroot()
     namespaces = {"m": "http://maven.apache.org/POM/4.0.0"}
     assert pom.findtext("m:groupId", namespaces=namespaces) == expected_group, module
@@ -80,7 +92,7 @@ for module in modules:
             assert artifact.is_file(), artifact
             assert artifact.stat().st_size == entry["size"], artifact
             for algorithm in ("md5", "sha1", "sha256", "sha512"):
-                assert hashlib.new(algorithm, artifact.read_bytes()).hexdigest() == entry[algorithm], artifact
+                assert digests(artifact)[algorithm] == entry[algorithm], artifact
 
 for module in modules:
     for variant in json.loads(module.read_text())["variants"]:

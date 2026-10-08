@@ -5,9 +5,17 @@ set -euo pipefail
 checksum="$(awk -v version="$VERSION" '$1 == version {print $2}' release-checksums.txt)"
 [[ "$checksum" =~ ^[a-f0-9]{64}$ ]] || { echo "No verified checksum for $VERSION" >&2; exit 1; }
 staging="$(mktemp -d)"
-trap 'rm -rf "$staging"' EXIT
+preserve_evidence() {
+  status=$?
+  diagnostics="${CI_DIAGNOSTICS_DIR:-ci-diagnostics}/public"
+  mkdir -p "$diagnostics"
+  printf 'version=%s\nexit=%s\n' "$VERSION" "$status" > "$diagnostics/result.txt"
+  rm -rf "$staging"
+  exit "$status"
+}
+trap preserve_evidence EXIT
 archive="$staging/toast-maven.tar.gz"
-curl -fsSL --retry 3 --connect-timeout 30 -o "$archive" "https://github.com/gycrosskit/toast/releases/download/$VERSION/toast-maven.tar.gz"
+curl -fsSL --retry 3 --connect-timeout 30 --max-time 300 -o "$archive" "https://github.com/gycrosskit/toast/releases/download/$VERSION/toast-maven.tar.gz"
 echo "$checksum  $archive" | shasum -a 256 -c -
 python3 - "$archive" "$staging/maven" <<'EXTRACT'
 import sys, tarfile
@@ -29,4 +37,4 @@ if [[ "$VERSION" != "0.1.3" ]]; then
   publications+=,toast-kuikly-android,toast-kuikly-iosarm64,toast-kuikly-iosx64,toast-kuikly-iossimulatorarm64
 fi
 python3 scripts/check-public-maven.py --repo toast --version "$VERSION" --commit "$commit" \
-  --expected-publications "$publications" --output-dir "$staging/public"
+  --expected-publications "$publications" --output-dir "${CI_DIAGNOSTICS_DIR:-ci-diagnostics}/public"
