@@ -1,28 +1,32 @@
 # GY CrossKit Toast
 
+2026-10-08 功能索引：toast core提供消息/Overlay状态与规格，toast-cmp提供Android/iOS Host，toast-kuikly提供Android/iOS/OHOS Host；legacy原生提示与Overlay的视觉/时长合同不同。 详见[功能与平台差异](docs/功能与平台差异.md)，含固定基线、五入口矩阵、真实回归与未验收范围。本次仅正式0.1.5基线的文档候选。
+
+最终核对（2026-10-08）：本轮在正式WT重跑core5项；MessageHost参数仅源码核对，真实字体/多行/读屏未验。 逐项时点与边界见[验证范围](docs/功能与平台差异.md#sdk系统与真实验证范围)。
+
 当前源码版本为 0.1.5：Kuikly `MessageHost` 将背景和 padding 交给独立 Box，修复 Kuikly 2.28 文案靠上；共同状态、规格、定时替换和销毁合同不变。Maven/Swift 使用 0.1.5，鸿蒙原生 HAR 继续配套 0.1.3。0.1.5 的正式发布与远程消费结果以对应 Release 为准；下方 0.1.3 验证记录属于历史版本。
 
 CMP Android/iOS 与 Kuikly Compose Android/iOS/OHOS 的共同 Overlay 接线见[跨端行为说明](docs/跨端行为候选.md)。组件编译和远程解析不能代替宿主正常、暗色、长文案及真机居中验收。
 
-Android、iOS 和 HarmonyOS 的短消息展示。新消息替换旧消息；文案和本地化由宿主提供。KMP 入口为 `MessagePlatform`，CMP 提供 CompositionLocal，HarmonyOS Kuikly 提供 Module。
+Android、iOS 和 HarmonyOS 的短消息展示。新消息替换旧消息；文案和本地化由宿主提供。KMP入口为 `MessagePlatform`；CMP与KuiklyCompose均提供CompositionLocal/MessageHost，legacy OHOS额外提供ToastModule。
 
-本轮 Maven/Swift/Git Pod/HAR 候选为 0.1.3，[prerelease 已发布](https://github.com/gycrosskit/toast/releases/tag/0.1.3)，实际下载 SHA 与 JitPack 全 13 个 module 的文件引用校验通过。独立真实 JitPack OHOS Kuikly、Android/iOS CMP 编译及 Simulator 最终链接、Release HAR 独立编译通过；安装示例使用候选精确版本，设备展示尚未验收。
+历史0.1.3轮次的Maven/Swift/Git Pod/HAR候选为0.1.3，[prerelease 已发布](https://github.com/gycrosskit/toast/releases/tag/0.1.3)，实际下载 SHA 与 JitPack 全 13 个 module 的文件引用校验通过。独立真实 JitPack OHOS Kuikly、Android/iOS CMP 编译及 Simulator 最终链接、Release HAR 独立编译通过；安装示例使用候选精确版本，设备展示尚未验收。
 
-OHPM `next` 提交已接受，仍在审核；精确版本查询及独立 Registry 安装返回 NOTFOUND。稳定 Registry `latest` 仍为 0.1.2，Release HAR 可下载不代表 Registry 可安装。
+历史0.1.3轮次的OHPM next提交接受后曾仍在审核，精确Registry安装返回NOTFOUND，当时latest为0.1.2；本次文档更新未重新查询Registry，不据历史状态断言当前可安装。Release HAR下载不代表Registry安装。
 
 ## 平台与要求
 
 | 平台 | 接入方式 | 系统要求 |
 | --- | --- | --- |
-| Android | `toast`，可选 `toast-cmp` | API 24+ |
-| iOS | KMP bridge + `GycToastNative`，或直接 Swift Package/CocoaPods | iOS 15+，Swift tools 5.9 |
-| HarmonyOS | `toast-kuikly` + `toast-native` HAR，或直接 ArkTS | 当前 HAR 的 target/compatible SDK 均为 API 22；`openToast/closeToast` API 本身从 API 18 提供 |
+| Android | Overlay用`toast-cmp`或`toast-kuikly`；legacy用`toast` | API 24+ |
+| iOS | Overlay用`toast-cmp`或`toast-kuikly`；legacy用KMP bridge+`GycToastNative`或Swift/Pod | iOS 15+，Swift tools 5.9（原生包） |
+| HarmonyOS | Overlay用`toast-kuikly`；legacy用Module+`toast-native` HAR或ArkTS | 当前 HAR 的 target/compatible SDK 均为 API 22；`openToast/closeToast` API 本身从 API 18 提供 |
 
 KMP 使用 Kotlin `2.2.21-1.0.0`，CMP 使用 Compose `1.10.3`，Kuikly 使用 `2.28.0-2.0.21-ohos`。`toast-core/` 的 Gradle 模块名及公开 Maven artifact 为 `toast`。
 
 ## 架构与调用流程
 
-`toast` 定义 `MessagePlatform`，`toast-cmp` 只把宿主实例提供给 Compose 页面；`toast-kuikly` 转发消息。原生展示由平台实现负责，文案与本地化由宿主提供。
+`toast`定义MessagePlatform/OverlayState/Spec；`toast-cmp`与`toast-kuikly`各提供provider和MessageHost。下图保留legacy native路径：Android系统Toast、iOS桥与OHOS Module；共同Overlay在各自Host渲染，详见[功能与平台差异](docs/功能与平台差异.md)。文案与本地化由宿主提供。
 
 ```mermaid
 flowchart TB
