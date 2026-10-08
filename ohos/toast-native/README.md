@@ -6,7 +6,7 @@
 ohpm install @gycrosskit/toast-native@0.1.3
 ```
 
-0.1.3 为候选，OHPM next 提交已接受、仍在审核；精确版本 Registry 查询/安装曾返回 NOTFOUND。审核通过并可查询后再运行上述安装命令，稳定 latest 保留 0.1.2。Release HAR 的下载与编译状态独立记录在仓库 README。
+HAR继续配套0.1.3，KMP/Swift正式基线为0.1.5。历史0.1.3轮次Registry查询/安装曾返回NOTFOUND；本次仅文档更新未重查Registry，不能据旧记录声称当前可安装或仍审核。Release HAR下载/编译与Registry独立。共同KuiklyCompose Overlay不由此HAR绘制，功能/限制见[功能与平台差异](../../docs/功能与平台差异.md)。
 
 ```typescript
 import { GycToastPresenter } from '@gycrosskit/toast-native';
