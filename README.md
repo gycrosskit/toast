@@ -1,6 +1,8 @@
 # GY CrossKit Toast
 
-当前源码新增[跨端行为候选](docs/跨端行为候选.md)，尚未发布；下方远程版本验收仍对应其既有不可变标签。
+当前源码版本为 0.1.5：Kuikly `MessageHost` 将背景和 padding 交给独立 Box，修复 Kuikly 2.28 文案靠上；共同状态、规格、定时替换和销毁合同不变。Maven/Swift 使用 0.1.5，鸿蒙原生 HAR 继续配套 0.1.3。0.1.5 的正式发布与远程消费结果以对应 Release 为准；下方 0.1.3 验证记录属于历史版本。
+
+CMP Android/iOS 与 Kuikly Compose Android/iOS/OHOS 的共同 Overlay 接线见[跨端行为说明](docs/跨端行为候选.md)。组件编译和远程解析不能代替宿主正常、暗色、长文案及真机居中验收。
 
 Android、iOS 和 HarmonyOS 的短消息展示。新消息替换旧消息；文案和本地化由宿主提供。KMP 入口为 `MessagePlatform`，CMP 提供 CompositionLocal，HarmonyOS Kuikly 提供 Module。
 
@@ -110,17 +112,17 @@ dependencyResolutionManagement {
 
 ```kotlin
 commonMain.dependencies {
-    implementation("com.github.gycrosskit.toast:toast:0.1.3")
+    implementation("com.github.gycrosskit.toast:toast:0.1.5")
     // Compose Multiplatform 宿主额外添加：
-    implementation("com.github.gycrosskit.toast:toast-cmp:0.1.3")
+    implementation("com.github.gycrosskit.toast:toast-cmp:0.1.5")
 }
 // HarmonyOS Kuikly 宿主额外添加：
 ohosArm64Main.dependencies {
-    implementation("com.github.gycrosskit.toast:toast-kuikly:0.1.3")
+    implementation("com.github.gycrosskit.toast:toast-kuikly:0.1.5")
 }
 ```
 
-iOS 在 Xcode 的 Package Dependencies 添加 `https://github.com/gycrosskit/toast.git`，选择精确版本 `0.1.3`，产品 `GycToastNative`。CocoaPods 可按 Git tag 安装，见接入指南。
+iOS 在 Xcode 的 Package Dependencies 添加 `https://github.com/gycrosskit/toast.git`，选择精确版本 `0.1.5`，产品 `GycToastNative`。CocoaPods 可按 Git tag 安装，见接入指南。
 
 HarmonyOS 原生包独立安装，候选正式可查询后执行；发布接受与 Registry 可安装分别核验：
 

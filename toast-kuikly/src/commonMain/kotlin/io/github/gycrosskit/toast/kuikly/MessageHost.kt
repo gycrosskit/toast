@@ -40,17 +40,22 @@ fun MessageHost(state: MessageOverlayState, modifier: Modifier = Modifier, conte
     Box(modifier.fillMaxSize()) {
         ProvideMessagePlatform(state, content)
         message.text?.let { text ->
-            BasicText(
-                text = text,
+            // Kuikly 2.28 的背景会覆盖文字节点的内容偏移，容器单独负责背景和内边距。
+            Box(
                 modifier = Modifier.align(Alignment.TopCenter)
                     .padding(MessageOverlaySpec.outerPaddingDp.dp)
                     .widthIn(max = MessageOverlaySpec.maxWidthDp.dp)
                     .background(Color(MessageOverlaySpec.backgroundArgb), RoundedCornerShape(MessageOverlaySpec.cornerRadiusDp.dp))
                     .padding(horizontal = MessageOverlaySpec.horizontalPaddingDp.dp, vertical = MessageOverlaySpec.verticalPaddingDp.dp)
                     .semantics { liveRegion = LiveRegionMode.Polite },
-                style = TextStyle(color = Color(MessageOverlaySpec.textArgb), fontSize = MessageOverlaySpec.fontSizeSp.sp,
-                    lineHeight = MessageOverlaySpec.lineHeightSp.sp, textAlign = TextAlign.Center),
-            )
+                contentAlignment = Alignment.Center,
+            ) {
+                BasicText(
+                    text = text,
+                    style = TextStyle(color = Color(MessageOverlaySpec.textArgb), fontSize = MessageOverlaySpec.fontSizeSp.sp,
+                        lineHeight = MessageOverlaySpec.lineHeightSp.sp, textAlign = TextAlign.Center),
+                )
+            }
         }
     }
 }
