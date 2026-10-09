@@ -15,6 +15,9 @@ kotlin {
     iosSimulatorArm64()
     ohosArm64()
     sourceSets {
+        androidMain.dependencies { api("com.tencent.kuikly-open:core-render-android:${libs.versions.kuikly.get()}") }
+        commonTest.dependencies { implementation(kotlin("test")) }
+        androidUnitTest.dependencies { implementation("org.robolectric:robolectric:4.16.1") }
         commonMain.dependencies {
             api(project(":toast"))
             api(libs.kuikly.core)

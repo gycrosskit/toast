@@ -1,14 +1,14 @@
 # GY CrossKit Toast
 
-2026-10-08 功能索引：toast core提供消息/Overlay状态与规格，toast-cmp提供Android/iOS Host，toast-kuikly提供Android/iOS/OHOS Host；legacy原生提示与Overlay的视觉/时长合同不同。 详见[功能与平台差异](docs/功能与平台差异.md)，含固定基线、五入口矩阵、真实回归与未验收范围。本次仅正式0.1.5基线的文档候选。
+2026-10-08 功能索引：toast core提供消息/Overlay状态与规格，toast-cmp提供Android/iOS Host，toast-kuikly提供Android/iOS/OHOS Host；legacy原生提示与Overlay的视觉/时长合同不同。 详见[功能与平台差异](docs/功能与平台差异.md)，含固定基线、五入口矩阵、真实回归与未验收范围。本轮为 0.1.6 Native Module 接收端候选，实际发布状态以 Release 为准。
 
 最终核对（2026-10-08）：本轮在正式WT重跑core5项；MessageHost参数仅源码核对，真实字体/多行/读屏未验。 逐项时点与边界见[验证范围](docs/功能与平台差异.md#sdk系统与真实验证范围)。
 
-当前源码版本为 0.1.5：Kuikly `MessageHost` 将背景和 padding 交给独立 Box，修复 Kuikly 2.28 文案靠上；共同状态、规格、定时替换和销毁合同不变。Maven/Swift 使用 0.1.5，鸿蒙原生 HAR 继续配套 0.1.3。0.1.5 的正式发布与远程消费结果以对应 Release 为准；链接中的 0.1.3 验证记录属于历史版本。
+当前源码版本为 0.1.6 候选：新增 Android `registerToastModule` / iOS `GycToastNative/Kuikly` 的原生 Module 接收端，复用已有进程 presenter。0.1.5 中：Kuikly `MessageHost` 将背景和 padding 交给独立 Box，修复 Kuikly 2.28 文案靠上；共同状态、规格、定时替换和销毁合同不变。本轮 Maven/Git Pod 候选为 0.1.6，SPM 仍仅提供原生 presenter，鸿蒙原生 HAR 继续配套 0.1.3。0.1.5 的正式发布与远程消费结果以对应 Release 为准；链接中的 0.1.3 验证记录属于历史版本。
 
 CMP Android/iOS 与 Kuikly Compose Android/iOS/OHOS 的共同 Overlay 接线见[跨端行为说明](docs/跨端行为候选.md)。组件编译和远程解析不能代替宿主正常、暗色、长文案及真机居中验收。
 
-Android、iOS 和 HarmonyOS 的短消息展示。新消息替换旧消息；文案和本地化由宿主提供。KMP入口为 `MessagePlatform`；CMP与KuiklyCompose均提供CompositionLocal/MessageHost，legacy OHOS额外提供ToastModule。
+Android、iOS 和 HarmonyOS 的短消息展示。新消息替换旧消息；文案和本地化由宿主提供。KMP入口为 `MessagePlatform`；CMP与KuiklyCompose均提供CompositionLocal/MessageHost，legacy 三端 `ToastModule` 的原生接线见[接入指南](docs/接入指南.md#androidios-native-module)。
 
 历史 0.1.3 的 Maven/Swift/Git Pod/Release HAR 消费与 OHPM 审核、Registry NOTFOUND 记录见[候选验收](verification/候选验收.md)。本次未重查 Registry，当前可安装性须单独核验；Release HAR 下载不代表 Registry 安装。
 
@@ -114,13 +114,13 @@ dependencyResolutionManagement {
 
 ```kotlin
 commonMain.dependencies {
-    implementation("com.github.gycrosskit.toast:toast:0.1.5")
+    implementation("com.github.gycrosskit.toast:toast:0.1.6")
     // Compose Multiplatform 宿主额外添加：
-    implementation("com.github.gycrosskit.toast:toast-cmp:0.1.5")
+    implementation("com.github.gycrosskit.toast:toast-cmp:0.1.6")
 }
 // HarmonyOS Kuikly 宿主额外添加：
 ohosArm64Main.dependencies {
-    implementation("com.github.gycrosskit.toast:toast-kuikly:0.1.5")
+    implementation("com.github.gycrosskit.toast:toast-kuikly:0.1.6")
 }
 ```
 
