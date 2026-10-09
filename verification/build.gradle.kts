@@ -7,6 +7,7 @@ val toastVersion = providers.gradleProperty("toastVersion").orElse("0.1.3").get(
 // CMP 的编译插件只用于 Android/iOS 探针，OHOS Kuikly 不依赖 Compose Runtime。
 val verifyCmp = providers.gradleProperty("verifyCmp").orElse("false").get().toBoolean()
 val verifyUnifiedUi = providers.gradleProperty("verifyUnifiedUi").orElse("false").get().toBoolean()
+val verifyNativeModule = providers.gradleProperty("verifyNativeModule").orElse("false").get().toBoolean()
 val kuiklyRenderFrameworkDir = providers.gradleProperty("kuiklyRenderFrameworkDir").orNull
 if (verifyCmp || verifyUnifiedUi) apply(plugin = "org.jetbrains.kotlin.plugin.compose")
 kotlin {
@@ -29,7 +30,10 @@ kotlin {
                 if (verifyUnifiedUi) implementation("com.github.gycrosskit.toast:toast-kuikly:$toastVersion")
             }
         }
-        androidMain { if (!verifyUnifiedUi) kotlin.exclude("**/Unified*.kt") }
+        androidMain {
+            if (!verifyUnifiedUi) kotlin.exclude("**/Unified*.kt")
+            if (!verifyNativeModule) kotlin.exclude("**/NativeModule*.kt")
+        }
         iosMain { if (!verifyUnifiedUi) kotlin.exclude("**/Unified*.kt") }
         androidMain.dependencies {
             implementation("com.github.gycrosskit.toast:toast-cmp:$toastVersion")
