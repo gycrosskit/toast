@@ -1,6 +1,6 @@
 import UIKit
 
-/// CMP 与 Kuikly 共用的进程提示入口；UI 操作自动切到主线程，新提示替换旧提示。
+/// 各宿主共用的进程提示入口；UI 操作自动切到主线程，新提示替换旧提示。
 @objc public final class GycToastPresenter: NSObject {
     /// 进程唯一 presenter，不持有业务控制器的强引用。
     @objc public static let shared = GycToastPresenter()

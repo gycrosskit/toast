@@ -26,5 +26,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "toast"
-include(":toast", ":toast-cmp", ":toast-kuikly", ":androidApp")
+include(":toast", ":toast-kuikly", ":androidApp")
 project(":toast").projectDir = file("toast-core")

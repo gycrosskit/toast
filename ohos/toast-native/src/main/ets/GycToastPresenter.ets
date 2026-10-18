@@ -3,7 +3,7 @@ import { PromptAction } from '@kit.ArkUI';
 
 /** 进程共用 presenter；UIAbility 主线程调用，串行关闭旧提示并展示最新请求。 */
 export class GycToastPresenter {
-  /** 进程唯一入口，CMP 与 Kuikly 共用。 */
+  /** 进程唯一入口，各宿主共用。 */
   static readonly shared: GycToastPresenter = new GycToastPresenter();
 
   private generation: number = 0;

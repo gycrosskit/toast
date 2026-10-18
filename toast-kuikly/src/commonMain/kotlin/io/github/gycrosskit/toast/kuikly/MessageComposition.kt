@@ -5,7 +5,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import io.github.gycrosskit.toast.MessagePlatform
 
-/** Kuikly Compose 与 CMP 使用相同 MessagePlatform 合同，渲染类型保持各框架的薄边界。 */
+/** Kuikly Compose 注入宿主提供的 MessagePlatform，不持有额外消息状态。 */
 val LocalMessagePlatform = staticCompositionLocalOf<MessagePlatform> {
     error("MessagePlatform must be provided by the host")
 }

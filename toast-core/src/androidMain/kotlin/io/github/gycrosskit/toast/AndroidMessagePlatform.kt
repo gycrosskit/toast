@@ -6,7 +6,7 @@ import android.os.Looper
 import android.widget.Toast
 import java.util.concurrent.atomic.AtomicLong
 
-/** 应用进程只持有一个实例，CMP 与 Kuikly 的原生桥必须共用它。 */
+/** 应用进程只持有一个实例，各原生桥必须共用它。 */
 class AndroidMessagePlatform private constructor(context: Context) : MessagePlatform {
     private val appContext = context.applicationContext
     private val mainHandler = Handler(Looper.getMainLooper())

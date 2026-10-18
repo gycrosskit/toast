@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-/** 每个页面根 Host 拥有一个实例；两个 UI 引擎共用消息所有权，销毁后新建实例。 */
+/** 每个页面根 Host 拥有一个实例；Host 持有消息所有权，销毁后新建实例。 */
 class MessageOverlayState : MessagePlatform {
     private val mutableState = MutableStateFlow(MessageOverlayUiState())
     val state = mutableState.asStateFlow()
@@ -34,7 +34,7 @@ data class MessageOverlayUiState(
     val disposed: Boolean = false,
 )
 
-/** 两个渲染引擎只转换单位和颜色，不另存样式或消息状态；根布局由宿主应用安全区域。 */
+/** 渲染层只转换单位和颜色，不另存样式或消息状态；根布局由宿主应用安全区域。 */
 object MessageOverlaySpec {
     const val outerPaddingDp = 16
     const val horizontalPaddingDp = 18

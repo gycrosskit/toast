@@ -22,3 +22,13 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "toast-consumer"
+
+// 显式本地源码消费仅用于未发布候选，不能证明远程 Maven 可用。
+if (providers.gradleProperty("verifyLocalSource").isPresent) {
+    includeBuild("..") {
+        dependencySubstitution {
+            substitute(module("com.github.gycrosskit.toast:toast")).using(project(":toast"))
+            substitute(module("com.github.gycrosskit.toast:toast-kuikly")).using(project(":toast-kuikly"))
+        }
+    }
+}
