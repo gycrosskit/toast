@@ -1,14 +1,10 @@
 # GY CrossKit Toast
 
-2026-10-08 功能索引：toast core提供消息/Overlay状态与规格，toast-cmp提供Android/iOS Host，toast-kuikly提供Android/iOS/OHOS Host；legacy原生提示与Overlay的视觉/时长合同不同。 详见[功能与平台差异](docs/功能与平台差异.md)，含固定基线、五入口矩阵、真实回归与未验收范围。本轮为 0.1.6 Native Module 接收端候选，实际发布状态以 Release 为准。
+当前源码候选为 **Maven `0.2.0-dev`，尚未发布**：移除 `toast-cmp`，仅维护 `toast` core 与 `toast-kuikly`。这是删除 CMP 公开坐标/API 的不兼容候选；旧 CMP 使用方应继续锁定已发布的 `0.1.x`，或迁移至 KuiklyCompose/native 入口，不能直接升级。
 
-最终核对（2026-10-08）：本轮在正式WT重跑core5项；MessageHost参数仅源码核对，真实字体/多行/读屏未验。 逐项时点与边界见[验证范围](docs/功能与平台差异.md#sdk系统与真实验证范围)。
+KuiklyCompose Android/iOS/OHOS 的 `MessageHost`、CompositionLocal、Compose compiler/runtime，以及共享 Overlay 状态、规格、定时替换和销毁合同保留。Android/iOS/OHOS 原生提示与 Module 也保留；文案和本地化由宿主提供，legacy 原生提示与 Overlay 的视觉/时长合同不同。详见[功能与平台差异](docs/功能与平台差异.md)。
 
-当前源码版本为 0.1.6 候选：新增 Android `registerToastModule` / iOS `GycToastNative/Kuikly` 的原生 Module 接收端，复用已有进程 presenter。0.1.5 中：Kuikly `MessageHost` 将背景和 padding 交给独立 Box，修复 Kuikly 2.28 文案靠上；共同状态、规格、定时替换和销毁合同不变。本轮 Maven/Git Pod 候选为 0.1.6，SPM 仍仅提供原生 presenter，鸿蒙原生 HAR 继续配套 0.1.3。0.1.5 的正式发布与远程消费结果以对应 Release 为准；链接中的 0.1.3 验证记录属于历史版本。
-
-CMP Android/iOS 与 Kuikly Compose Android/iOS/OHOS 的共同 Overlay 接线见[跨端行为说明](docs/跨端行为候选.md)。组件编译和远程解析不能代替宿主正常、暗色、长文案及真机居中验收。
-
-Android、iOS 和 HarmonyOS 的短消息展示。新消息替换旧消息；文案和本地化由宿主提供。KMP入口为 `MessagePlatform`；CMP与KuiklyCompose均提供CompositionLocal/MessageHost，legacy 三端 `ToastModule` 的原生接线见[接入指南](docs/接入指南.md#androidios-native-module)。
+原生 Git Pod 保持 `0.1.6`，SPM 仍仅提供 presenter，OHOS HAR 保持 `0.1.3`；本次未发布任一渠道。历史验证按原版本和日期保留，不证明当前候选通过公开消费或设备验收。
 
 历史 0.1.3 的 Maven/Swift/Git Pod/Release HAR 消费与 OHPM 审核、Registry NOTFOUND 记录见[候选验收](verification/候选验收.md)。本次未重查 Registry，当前可安装性须单独核验；Release HAR 下载不代表 Registry 安装。
 
@@ -16,20 +12,20 @@ Android、iOS 和 HarmonyOS 的短消息展示。新消息替换旧消息；文�
 
 | 平台 | 接入方式 | 系统要求 |
 | --- | --- | --- |
-| Android | Overlay用`toast-cmp`或`toast-kuikly`；legacy用`toast` | API 24+ |
-| iOS | Overlay用`toast-cmp`或`toast-kuikly`；legacy用KMP bridge+`GycToastNative`或Swift/Pod | iOS 15+，Swift tools 5.9（原生包） |
+| Android | Overlay用`toast-kuikly`；legacy用`toast` | API 24+ |
+| iOS | Overlay用`toast-kuikly`；legacy用KMP bridge+`GycToastNative`或Swift/Pod | iOS 15+，Swift tools 5.9（原生包） |
 | HarmonyOS | Overlay用`toast-kuikly`；legacy用Module+`toast-native` HAR或ArkTS | 当前 HAR 的 target/compatible SDK 均为 API 22；`openToast/closeToast` API 本身从 API 18 提供 |
 
-KMP 使用 Kotlin `2.2.21-1.0.0`，CMP 使用 Compose `1.10.3`，Kuikly 使用 `2.28.0-2.0.21-ohos`。`toast-core/` 的 Gradle 模块名及公开 Maven artifact 为 `toast`。
+KMP 使用 Kotlin `2.2.21-1.0.0`，Kuikly 使用 `2.28.0-2.0.21-ohos`。`toast-core/` 的 Gradle 模块名及公开 Maven artifact 为 `toast`。
 
 ## 架构与调用流程
 
-`toast`定义MessagePlatform/OverlayState/Spec；`toast-cmp`与`toast-kuikly`各提供provider和MessageHost。下图保留legacy native路径：Android系统Toast、iOS桥与OHOS Module；共同Overlay在各自Host渲染，详见[功能与平台差异](docs/功能与平台差异.md)。文案与本地化由宿主提供。
+`toast`定义MessagePlatform/OverlayState/Spec；`toast-kuikly`提供provider和MessageHost。下图保留legacy native路径：Android系统Toast、iOS桥与OHOS Module；共同Overlay在各自Host渲染，详见[功能与平台差异](docs/功能与平台差异.md)。文案与本地化由宿主提供。
 
 ```mermaid
 flowchart TB
-    Host[宿主] --> CMP[toast-cmp<br/>ProvideMessagePlatform]
-    CMP --> Core[toast<br/>MessagePlatform]
+    Host[宿主] --> Overlay[toast-kuikly<br/>MessageHost / ProvideMessagePlatform]
+    Overlay --> Core[toast<br/>MessagePlatform]
     Host --> Core
     Core --> Android[AndroidMessagePlatform<br/>系统 Toast]
     Core --> IOS[IosMessagePlatform<br/>IosMessageBridge]
@@ -67,7 +63,7 @@ sequenceDiagram
     Note over Presenter,System: 已显示消息归共享 presenter 管理
 ```
 
-类图聚焦 KMP 契约及 bridge；CMP 的 `ProvideMessagePlatform`、`rememberMessages` 是函数，不是额外 Manager 类。
+类图聚焦 KMP 契约及 bridge；KuiklyCompose 的 `ProvideMessagePlatform`、`rememberMessages` 是函数，不是额外 Manager 类。
 
 ```mermaid
 classDiagram
@@ -96,7 +92,7 @@ classDiagram
     IosMessagePlatform --> IosMessageBridge : 持有
 ```
 
-源码：[MessagePlatform 与时长](toast-core/src/commonMain/kotlin/io/github/gycrosskit/toast/MessagePlatform.kt)、[Android 实现](toast-core/src/androidMain/kotlin/io/github/gycrosskit/toast/AndroidMessagePlatform.kt)、[iOS 实现与 bridge](toast-core/src/iosMain/kotlin/io/github/gycrosskit/toast/IosMessagePlatform.kt)、[CMP 接线](toast-cmp/src/commonMain/kotlin/io/github/gycrosskit/toast/cmp/MessageComposition.kt)、[ToastModule](toast-kuikly/src/commonMain/kotlin/io/github/gycrosskit/toast/kuikly/ToastModule.kt)、[HAR Module](ohos/toast-native/src/main/ets/GycToastModule.ets)、[HAR Presenter](ohos/toast-native/src/main/ets/GycToastPresenter.ets)、[Swift Presenter](iosApp/Sources/GycToastNative/ToastPresenter.swift)。
+源码：[MessagePlatform 与时长](toast-core/src/commonMain/kotlin/io/github/gycrosskit/toast/MessagePlatform.kt)、[Android 实现](toast-core/src/androidMain/kotlin/io/github/gycrosskit/toast/AndroidMessagePlatform.kt)、[iOS 实现与 bridge](toast-core/src/iosMain/kotlin/io/github/gycrosskit/toast/IosMessagePlatform.kt)、[KuiklyCompose 接线](toast-kuikly/src/commonMain/kotlin/io/github/gycrosskit/toast/kuikly/MessageComposition.kt)、[ToastModule](toast-kuikly/src/commonMain/kotlin/io/github/gycrosskit/toast/kuikly/ToastModule.kt)、[HAR Module](ohos/toast-native/src/main/ets/GycToastModule.ets)、[HAR Presenter](ohos/toast-native/src/main/ets/GycToastPresenter.ets)、[Swift Presenter](iosApp/Sources/GycToastNative/ToastPresenter.swift)。
 
 ## 安装
 
@@ -112,15 +108,12 @@ dependencyResolutionManagement {
 }
 ```
 
+以下为尚未发布的候选坐标；只可在本地候选 Maven 仓库验证，公开安装需等正式不可变版本及 Release 收据：
+
 ```kotlin
 commonMain.dependencies {
-    implementation("com.github.gycrosskit.toast:toast:0.1.6")
-    // Compose Multiplatform 宿主额外添加：
-    implementation("com.github.gycrosskit.toast:toast-cmp:0.1.6")
-}
-// HarmonyOS Kuikly 宿主额外添加：
-ohosArm64Main.dependencies {
-    implementation("com.github.gycrosskit.toast:toast-kuikly:0.1.6")
+    implementation("com.github.gycrosskit.toast:toast-kuikly:0.2.0-dev")
+    // 仅使用 native core 时，改为依赖 toast:0.2.0-dev。
 }
 ```
 
@@ -137,14 +130,13 @@ ohpm install @gycrosskit/toast-native@0.1.3
 ## 最小使用
 
 ```kotlin
+import androidx.compose.runtime.remember
 import io.github.gycrosskit.toast.*
-import io.github.gycrosskit.toast.cmp.*
+import io.github.gycrosskit.toast.kuikly.*
 
-// Android：在应用范围复用同一个实例。
-val messages = AndroidMessagePlatform.get(applicationContext)
-messages.show("操作完成")
-// 在 Compose 应用根部：
-ProvideMessagePlatform(messages) {
+// 在 KuiklyCompose 页面根部记住一个 state；移除 Host 后不可复用该实例。
+val messages = remember { MessageOverlayState() }
+MessageHost(messages) {
     // 页面内可调用 rememberMessages().show("操作完成")。
 }
 ```
@@ -158,7 +150,7 @@ GycToastPresenter.shared.show(message: "操作完成")
 
 ## 生命周期与边界
 
-Android 的不同 UI 引擎复用 `AndroidMessagePlatform.get(applicationContext)`，避免各自展示竞争。iOS 使用不可点击的独立 UIWindow，需要有效根控制器；KMP 宿主通过 `IosMessageBridge` 转发到原生 presenter。HarmonyOS 需要已创建主窗口的 UIAbilityContext 或注册 `GycToastModule`。
+Android 的原生提示调用复用 `AndroidMessagePlatform.get(applicationContext)`，避免各自展示竞争。iOS 使用不可点击的独立 UIWindow，需要有效根控制器；KMP 宿主通过 `IosMessageBridge` 转发到原生 presenter。HarmonyOS 需要已创建主窗口的 UIAbilityContext 或注册 `GycToastModule`。
 
 每个 Pager 注册组件 `ToastModule` 和原生 `GycToastModule`，业务只映射消息文案/时长；`pageWillDestroy` 调用 `ToastModule.dispose()`，原生 `onDestroy` 后拒绝消息。
 不再把showMessage协议复制到应用的系统动作Module；已显示Toast仍由唯一presenter管理，不由旧Page销毁新Page消息。
@@ -183,3 +175,5 @@ Maven Release 发布或手动填写精确已发布版本时，`verify-public` �
 OHOS KLIB 编译不代表 HAR 构建、ohpm 上架或真机验收。当前没有已确认可用的 DevEco/Hvigor runner，这些检查尚未自动化，不能作为 CI 通过范围。
 
 阶段、缓存、有限网络重试、失败记录与证据边界见[共用 CI 规则](https://github.com/gycrosskit/.github/blob/main/docs/持续集成门禁.md)；本库实际平台命令以 workflow 为准。源码通过、远程消费、HAR/ohpm 与设备验收分别记录。
+
+当前 `verification` 默认消费远程两个现存 Maven 产品；未发布候选可显式传 `-PverifyLocalSource` 验证本仓库源码，该模式不代表公开消费。Android `verifyNoCmpUi` 拒绝第二套 JetBrains/AndroidX CMP UI，允许 KuiklyCompose/runtime。`0.1.x` 的三产品历史验收应检出对应 tag 使用原 consumer，不用当前候选合同重验旧归档。

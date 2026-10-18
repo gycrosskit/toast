@@ -12,7 +12,7 @@ import io.github.gycrosskit.toast.MessagePlatform
 import org.json.JSONException
 import org.json.JSONObject
 
-/** 每个 Renderer 注册一个接收端，显示仍复用 CMP 使用的进程提示入口。 */
+/** 每个 Renderer 注册一个接收端，显示仍复用进程提示入口。 */
 class AndroidToastModule(private val platform: MessagePlatform) : KuiklyRenderBaseModule() {
     constructor(context: Context) : this(AndroidMessagePlatform.get(context))
 

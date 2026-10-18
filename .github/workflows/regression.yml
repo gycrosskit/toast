@@ -99,6 +99,7 @@ jobs:
         if: needs.changes.outputs.source == 'true'
         run: |
           python3 tests/test_metadata.py
+          python3 tests/test_no_cmp.py
           TYPESCRIPT_PATH="$RUNNER_TEMP/ci-tools/node_modules/typescript" node --test tests/kuikly-module.cjs
       - name: Explain lightweight completion
         if: ${{ !(needs.changes.outputs.source == 'true') }}
@@ -146,7 +147,11 @@ jobs:
       - run: bash scripts/ci-pin-fork-host.sh
         timeout-minutes: 3
         if: needs.changes.outputs.source == 'true'
-      - run: python3 scripts/ci-run.py --no-progress-seconds 300 --log ci-diagnostics/android.log -- bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info :toast:testDebugUnitTest :toast-kuikly:testDebugUnitTest :toast:compileDebugKotlinAndroid :toast-cmp:compileDebugKotlinAndroid :toast-kuikly:compileDebugKotlinAndroid --no-daemon --max-workers=1
+      - run: python3 scripts/ci-run.py --no-progress-seconds 300 --log ci-diagnostics/android.log -- bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info :toast:testDebugUnitTest :toast-kuikly:testDebugUnitTest :toast:compileDebugKotlinAndroid :toast-kuikly:compileDebugKotlinAndroid --no-daemon --max-workers=1
+        timeout-minutes: 35
+        if: needs.changes.outputs.source == 'true'
+      - name: Verify local source Kuikly consumer and UI isolation
+        run: python3 scripts/ci-run.py --no-progress-seconds 300 --log ci-diagnostics/android-consumer-source.log -- bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info -p verification -PverifyLocalSource compileDebugKotlinAndroid verifyNoCmpUi --no-daemon --max-workers=1
         timeout-minutes: 35
         if: needs.changes.outputs.source == 'true'
       - name: Explain lightweight completion
@@ -206,7 +211,7 @@ jobs:
             x86_64) native_target=IosX64; native_test=iosX64Test ;;
             *) echo "Unsupported macOS architecture" >&2; exit 1 ;;
           esac
-          python3 scripts/ci-run.py --no-progress-seconds 300 --log ci-diagnostics/native.log -- bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info :toast:compileKotlinIosArm64 :toast:compileKotlin${native_target} :toast-cmp:compileKotlin${native_target} :toast:${native_test} :toast:compileKotlinOhosArm64 :toast-kuikly:compileKotlinIosArm64 :toast-kuikly:compileKotlin${native_target} :toast-kuikly:compileKotlinOhosArm64 --no-daemon --max-workers=1
+          python3 scripts/ci-run.py --no-progress-seconds 300 --log ci-diagnostics/native.log -- bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info :toast:compileKotlinIosArm64 :toast:compileKotlin${native_target} :toast:${native_test} :toast:compileKotlinOhosArm64 :toast-kuikly:compileKotlinIosArm64 :toast-kuikly:compileKotlin${native_target} :toast-kuikly:compileKotlinOhosArm64 --no-daemon --max-workers=1
           python3 - "toast-core/build/test-results/$native_test" <<'TEST_RESULTS'
           import sys, xml.etree.ElementTree as ET
           from pathlib import Path
@@ -278,11 +283,7 @@ jobs:
       - timeout-minutes: 35
         if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && inputs.version != '')
         run: |
-          unified_ui=true
-          case "$VERSION" in 0.1.3) unified_ui=false ;; esac
-          native_module=true
-          case "$VERSION" in 0.1.[0-5]) native_module=false ;; esac
-          python3 scripts/ci-run.py --no-progress-seconds 300 --log ci-diagnostics/release-android.log -- bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info -p verification compileDebugKotlinAndroid -PtoastVersion="$VERSION" -PverifyCmp=true -PverifyUnifiedUi="$unified_ui" -PverifyNativeModule="$native_module" --refresh-dependencies --no-daemon --max-workers=1
+          python3 scripts/ci-run.py --no-progress-seconds 300 --log ci-diagnostics/release-android.log -- bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info -p verification compileDebugKotlinAndroid verifyNoCmpUi -PtoastVersion="$VERSION" --refresh-dependencies --no-daemon --max-workers=1
       - name: Explain lightweight completion
         if: ${{ !(github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && inputs.version != '')) }}
         run: echo 'No build is required for this event and scope.'
@@ -343,21 +344,9 @@ jobs:
             x86_64) native_target=IosX64; native_test=iosX64Test ;;
             *) echo "Unsupported macOS architecture" >&2; exit 1 ;;
           esac
-          unified_ui=true
-          case "$VERSION" in 0.1.3) unified_ui=false ;; esac
-          native_module=true
-          case "$VERSION" in 0.1.[0-5]) native_module=false ;; esac
-          render_args=()
-          if [[ "$unified_ui" == true ]]; then
-            if [[ "$native_module" == true ]]; then
-              render_dir=$(bash scripts/ci-build-kuikly-render.sh "$RUNNER_TEMP/kuikly-ios-render" GycToastNative/Kuikly toast "$VERSION")
-            else
-              render_dir=$(bash scripts/ci-build-kuikly-render.sh "$RUNNER_TEMP/kuikly-ios-render")
-            fi
-            render_args=("-PkuiklyRenderFrameworkDir=$render_dir")
-          fi
-          python3 scripts/ci-run.py --no-progress-seconds 300 --log ci-diagnostics/release-native.log -- bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info -p verification linkDebugFramework${native_target} -PtoastVersion="$VERSION" -PverifyCmp=true -PverifyUnifiedUi="$unified_ui" "${render_args[@]}" --refresh-dependencies --no-daemon --max-workers=1
-          python3 scripts/ci-run.py --no-progress-seconds 300 --log ci-diagnostics/release-native.log -- bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info -p verification compileKotlinOhosArm64 -PtoastVersion="$VERSION" -PverifyUnifiedUi="$unified_ui" --no-daemon --max-workers=1 --stacktrace
+          render_dir=$(bash scripts/ci-build-kuikly-render.sh "$RUNNER_TEMP/kuikly-ios-render" GycToastNative/Kuikly toast "$VERSION")
+          python3 scripts/ci-run.py --no-progress-seconds 300 --log ci-diagnostics/release-native.log -- bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info -p verification linkDebugFramework${native_target} -PtoastVersion="$VERSION" "-PkuiklyRenderFrameworkDir=$render_dir" --refresh-dependencies --no-daemon --max-workers=1
+          python3 scripts/ci-run.py --no-progress-seconds 300 --log ci-diagnostics/release-native.log -- bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info -p verification compileKotlinOhosArm64 -PtoastVersion="$VERSION" --no-daemon --max-workers=1 --stacktrace
       - name: Explain lightweight completion
         if: ${{ !(github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && inputs.version != '')) }}
         run: echo 'No build is required for this event and scope.'

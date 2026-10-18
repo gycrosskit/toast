@@ -1,7 +1,7 @@
 Pod::Spec.new do |spec|
   spec.name = 'GycToastNative'
   spec.version = '0.1.6'
-  spec.summary = 'Native iOS toast presenter shared by CMP and Kuikly hosts.'
+  spec.summary = 'Native iOS toast presenter for native and Kuikly hosts.'
   spec.homepage = 'https://github.com/gycrosskit/toast'
   spec.license = { :type => 'Apache-2.0', :file => 'LICENSE' }
   spec.author = { 'gycrosskit' => 'guoyanggit@gmail.com' }
