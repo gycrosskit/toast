@@ -1,8 +1,10 @@
 # GY CrossKit Toast
 
-当前源码候选为 **Maven `0.2.0-rc.1`，尚未发布**：移除 `toast-cmp`，仅维护 `toast` core 与 `toast-kuikly`。这是删除 CMP 公开坐标/API 的不兼容候选；旧 CMP 使用方应继续锁定已发布的 `0.1.x`，或迁移至 KuiklyCompose/native 入口，不能直接升级。
+当前源码候选为 **Maven `0.2.0-rc.2`，尚未发布**：移除 `toast-cmp`，仅维护 `toast` core 与 `toast-kuikly`。这是删除 CMP 公开坐标/API 的不兼容候选；旧 CMP 使用方应继续锁定已发布的 `0.1.x`，或迁移至 KuiklyCompose/native 入口，不能直接升级。
 
 KuiklyCompose Android/iOS/OHOS 的 `MessageHost`、CompositionLocal、Compose compiler/runtime，以及共享 Overlay 状态、规格、定时替换和销毁合同保留。Android/iOS/OHOS 原生提示与 Module 也保留；文案和本地化由宿主提供，legacy 原生提示与 Overlay 的视觉/时长合同不同。详见[功能与平台差异](docs/功能与平台差异.md)。
+
+`0.2.0-rc.1` 已发布；其公开制品检查与 Android 消费通过，Native job 在 Pod/Renderer 构建成功后因日志目录缺失退出，尚未执行 Maven Native 最终链接。本候选修复该 CI 顺序，旧 tag、归档和 checksum 保留。
 
 原生 Git Pod 保持 `0.1.6`，SPM 仍仅提供 presenter，OHOS HAR 保持 `0.1.3`；本次未发布任一渠道。历史验证按原版本和日期保留，不证明当前候选通过公开消费或设备验收。
 
@@ -114,8 +116,8 @@ dependencyResolutionManagement {
 
 ```kotlin
 commonMain.dependencies {
-    implementation("com.github.gycrosskit.toast:toast-kuikly:0.2.0-rc.1")
-    // 仅使用 native core 时，改为依赖 toast:0.2.0-rc.1。
+    implementation("com.github.gycrosskit.toast:toast-kuikly:0.2.0-rc.2")
+    // 仅使用 native core 时，改为依赖 toast:0.2.0-rc.2。
 }
 ```
 

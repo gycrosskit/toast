@@ -23,7 +23,8 @@ for job in ('release-android', 'release-native'):
 native = next(step['run'] for step in workflow['jobs']['release-native']['steps']
               if 'render_dir=' in step.get('run', ''))
 assert 'GycToastNative/Kuikly toast "$NATIVE_VERSION"' in native
-receipt = native[native.index('cp "$RUNNER_TEMP/kuikly-ios-render/Podfile.lock"'):native.index('python3 scripts/ci-run.py')]
+assert native.index('mkdir -p ci-diagnostics') < native.index('cp "$RUNNER_TEMP/kuikly-ios-render/Podfile.lock"')
+receipt = native[native.index('mkdir -p ci-diagnostics'):native.index('python3 scripts/ci-run.py')]
 
 with TemporaryDirectory() as folder:
     root = Path(folder)
@@ -54,7 +55,7 @@ if os.environ.get('FIXTURE_MISSING_SIDECAR') == '1':
     next(repo.rglob('*.pom.sha512')).unlink()
 FIXTURE
 ''')
-    environment = dict(os.environ, VERSION='0.2.0-rc.1', FIXTURE_CONTRACT=str(ROOT / 'tests/test_no_cmp.py'))
+    environment = dict(os.environ, VERSION='0.2.0-rc.2', FIXTURE_CONTRACT=str(ROOT / 'tests/test_no_cmp.py'))
     command = ['bash', 'scripts/package-maven.sh']
     result = subprocess.run(command, cwd=root, env=environment, capture_output=True, text=True)
     assert result.returncode == 0, result.stdout + result.stderr
@@ -75,7 +76,6 @@ FIXTURE
 
 with TemporaryDirectory() as folder:
     root = Path(folder)
-    (root / 'ci-diagnostics').mkdir()
     installed = root / 'kuikly-ios-render/Pods/GycToastNative/iosApp/Sources/GycToastNative'
     installed.mkdir(parents=True)
     (installed / 'Toast.swift').write_text('fixture native Swift')
@@ -93,11 +93,11 @@ esac
 ''')
     git.chmod(0o755)
     env = dict(os.environ, PATH=str(tools) + os.pathsep + os.environ['PATH'], RUNNER_TEMP=str(root),
-               VERSION='0.2.0-rc.1', NATIVE_VERSION='0.1.6', MOCK_HEAD='a' * 40, MOCK_TAG_SHA='a' * 40)
+               VERSION='0.2.0-rc.2', NATIVE_VERSION='0.1.6', MOCK_HEAD='a' * 40, MOCK_TAG_SHA='a' * 40)
     for tag, version, head, changed, expected in [
         ('0.1.6', '0.1.6', 'a' * 40, '0', True),
-        ('0.2.0-rc.1', '0.1.6', 'a' * 40, '0', False),
-        ('0.1.6', '0.2.0-rc.1', 'a' * 40, '0', False),
+        ('0.2.0-rc.2', '0.1.6', 'a' * 40, '0', False),
+        ('0.1.6', '0.2.0-rc.2', 'a' * 40, '0', False),
         ('0.1.6', '0.1.6', 'b' * 40, '0', False),
         ('0.1.6', '0.1.6', 'a' * 40, '1', False),
     ]:
@@ -110,11 +110,12 @@ CHECKOUT OPTIONS:
     :tag: {tag}
     :git: https://github.com/gycrosskit/toast.git
 ''')
+        shutil.rmtree(root / 'ci-diagnostics', ignore_errors=True)
+        assert not (root / 'ci-diagnostics').exists()
         proof = root / 'ci-diagnostics/release-pod.json'
-        proof.unlink(missing_ok=True)
         result = subprocess.run(['bash', '-euo', 'pipefail', '-c', receipt], cwd=root,
                                 env=dict(env, MOCK_HEAD=head, BAD_NATIVE_BYTES=changed), capture_output=True, text=True)
         assert (result.returncode == 0) == expected, result.stderr
         assert proof.exists() == expected
 
-print('PASS: 12-publication package has real SHA; missing version/sidecar fail; retained Pod tag/version/SHA/bytes checked. Fixture only, no SDK/network.')
+print('PASS: 12-publication package has real SHA; missing version/sidecar fail; fresh diagnostics directory created; retained Pod tag/version/SHA/bytes checked. Fixture only, no SDK/network.')
