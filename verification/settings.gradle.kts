@@ -9,9 +9,16 @@ pluginManagement {
 }
 dependencyResolutionManagement {
     repositories {
-        maven {
-            url = uri(providers.gradleProperty("toastMavenRepo").orElse("https://jitpack.io").get())
-            content { includeGroup("com.github.gycrosskit.toast") }
+        if (providers.gradleProperty("remoteOnly").isPresent) {
+            exclusiveContent {
+                forRepository { maven { url = uri("https://jitpack.io") } }
+                filter { includeGroup("com.github.gycrosskit.toast") }
+            }
+        } else {
+            maven {
+                url = uri(providers.gradleProperty("toastMavenRepo").orElse("https://jitpack.io").get())
+                content { includeGroup("com.github.gycrosskit.toast") }
+            }
         }
         maven("https://maven.eazytec-cloud.com/nexus/repository/maven-public/")
         maven("https://maven.aliyun.com/repository/google")

@@ -100,6 +100,7 @@ jobs:
         run: |
           python3 tests/test_metadata.py
           python3 tests/test_no_cmp.py
+          python3 tests/test_release_candidate.py
           TYPESCRIPT_PATH="$RUNNER_TEMP/ci-tools/node_modules/typescript" node --test tests/kuikly-module.cjs
       - name: Explain lightweight completion
         if: ${{ !(needs.changes.outputs.source == 'true') }}
@@ -283,7 +284,7 @@ jobs:
       - timeout-minutes: 35
         if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && inputs.version != '')
         run: |
-          python3 scripts/ci-run.py --no-progress-seconds 300 --log ci-diagnostics/release-android.log -- bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info -p verification compileDebugKotlinAndroid verifyNoCmpUi -PtoastVersion="$VERSION" --refresh-dependencies --no-daemon --max-workers=1
+          python3 scripts/ci-run.py --no-progress-seconds 300 --log ci-diagnostics/release-android.log -- bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info -p verification compileDebugKotlinAndroid verifyNoCmpUi -PtoastVersion="$VERSION" -PremoteOnly --refresh-dependencies --no-daemon --max-workers=1
       - name: Explain lightweight completion
         if: ${{ !(github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && inputs.version != '')) }}
         run: echo 'No build is required for this event and scope.'
@@ -299,6 +300,7 @@ jobs:
     timeout-minutes: 60
     env:
       VERSION: ${{ github.event.release.tag_name || inputs.version }}
+      NATIVE_VERSION: '0.1.6'
     steps:
       - name: Require successful scope and public verification
         run: |
@@ -344,9 +346,28 @@ jobs:
             x86_64) native_target=IosX64; native_test=iosX64Test ;;
             *) echo "Unsupported macOS architecture" >&2; exit 1 ;;
           esac
-          render_dir=$(bash scripts/ci-build-kuikly-render.sh "$RUNNER_TEMP/kuikly-ios-render" GycToastNative/Kuikly toast "$VERSION")
-          python3 scripts/ci-run.py --no-progress-seconds 300 --log ci-diagnostics/release-native.log -- bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info -p verification linkDebugFramework${native_target} -PtoastVersion="$VERSION" "-PkuiklyRenderFrameworkDir=$render_dir" --refresh-dependencies --no-daemon --max-workers=1
-          python3 scripts/ci-run.py --no-progress-seconds 300 --log ci-diagnostics/release-native.log -- bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info -p verification compileKotlinOhosArm64 -PtoastVersion="$VERSION" --no-daemon --max-workers=1 --stacktrace
+          render_dir=$(bash scripts/ci-build-kuikly-render.sh "$RUNNER_TEMP/kuikly-ios-render" GycToastNative/Kuikly toast "$NATIVE_VERSION")
+          cp "$RUNNER_TEMP/kuikly-ios-render/Podfile.lock" ci-diagnostics/release-Podfile.lock.txt
+          git clone --depth 1 --single-branch --branch "$NATIVE_VERSION" https://github.com/gycrosskit/toast.git "$RUNNER_TEMP/toast-release-native"
+          export TOAST_NATIVE_SOURCE="$RUNNER_TEMP/toast-release-native" TOAST_NATIVE_INSTALLED="$RUNNER_TEMP/kuikly-ios-render/Pods/GycToastNative"
+          ruby -ryaml -rjson -rdigest - <<'RUBY'
+          lock = YAML.safe_load(File.read('ci-diagnostics/release-Podfile.lock.txt'), permitted_classes: [Symbol])
+          checkout = lock.fetch('CHECKOUT OPTIONS').fetch('GycToastNative')
+          tag = ENV.fetch('NATIVE_VERSION')
+          abort 'Unexpected Native Pod source' unless checkout.fetch(:tag) == tag && checkout.fetch(:git) == 'https://github.com/gycrosskit/toast.git'
+          versions = lock.fetch('PODS').flat_map { |pod| pod.is_a?(Hash) ? pod.keys : [pod] }.grep(/\AGycToastNative(?:\/(?:Core|Kuikly))? \(/)
+          abort 'Unexpected Native Pod package version' unless versions.size >= 2 && versions.all? { |name| name.end_with?("(#{tag})") }
+          manifests = %w[TOAST_NATIVE_SOURCE TOAST_NATIVE_INSTALLED].map do |key|
+            Dir.chdir(ENV.fetch(key)) { Dir.glob('iosApp/Sources/**/*.swift').sort.to_h { |name| [name, Digest::SHA256.file(name).hexdigest] } }
+          end
+          abort 'Installed Native Swift differs from immutable tag' if manifests.first.empty? || manifests.first != manifests.last
+          sha = IO.popen(['git', '-C', ENV.fetch('TOAST_NATIVE_SOURCE'), 'rev-parse', 'HEAD'], &:read).strip
+          refs = IO.popen(['git', 'ls-remote', '--tags', 'https://github.com/gycrosskit/toast.git', "refs/tags/#{tag}", "refs/tags/#{tag}^{}"], &:read).lines.to_h { |line| value, ref = line.split; [ref, value] }
+          abort 'Native tag SHA differs from installed source' unless sha.match?(/\A[0-9a-f]{40}\z/) && (refs["refs/tags/#{tag}^{}"] || refs["refs/tags/#{tag}"]) == sha
+          File.write('ci-diagnostics/release-pod.json', JSON.pretty_generate({maven_version: ENV.fetch('VERSION'), native_version: tag, native_commit: sha, installed_swift_sha256: manifests.first}) + "\n")
+          RUBY
+          python3 scripts/ci-run.py --no-progress-seconds 300 --log ci-diagnostics/release-native.log -- bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info -p verification linkDebugFramework${native_target} -PtoastVersion="$VERSION" -PremoteOnly "-PkuiklyRenderFrameworkDir=$render_dir" --refresh-dependencies --no-daemon --max-workers=1
+          python3 scripts/ci-run.py --no-progress-seconds 300 --log ci-diagnostics/release-native.log -- bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info -p verification compileKotlinOhosArm64 -PtoastVersion="$VERSION" -PremoteOnly --no-daemon --max-workers=1 --stacktrace
       - name: Explain lightweight completion
         if: ${{ !(github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && inputs.version != '')) }}
         run: echo 'No build is required for this event and scope.'

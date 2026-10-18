@@ -10,7 +10,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 GROUP = "com.github.gycrosskit.toast"
-VERSION = "0.2.0-dev"
+VERSION = "0.2.0-rc.1"
 PRODUCTS = ("toast", "toast-kuikly")
 TARGETS = {"android": None, "iosarm64": "ios_arm64", "iosx64": "ios_x64",
            "iossimulatorarm64": "ios_simulator_arm64", "ohosarm64": "ohos_arm64"}
@@ -86,6 +86,13 @@ class NoCmpContract(unittest.TestCase):
                        ','.join(PRODUCTS), ','.join(target for target in TARGETS.values() if target)]
             result = subprocess.run(command, capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            checksum = next(repository.rglob('*.pom.sha512'))
+            saved = checksum.read_bytes()
+            checksum.unlink()
+            result = subprocess.run(command, capture_output=True, text=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn('Missing checksum', result.stderr)
+            checksum.write_bytes(saved)
             self.write_module(repository, 'toast-cmp', [], '.jar')
             result = subprocess.run(command, capture_output=True, text=True)
             self.assertNotEqual(result.returncode, 0)
@@ -107,6 +114,10 @@ class NoCmpContract(unittest.TestCase):
 <groupId>{GROUP}</groupId><artifactId>{name}</artifactId><version>{VERSION}</version>
 <licenses><license><name>Apache License, Version 2.0</name>
 <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url><distribution>repo</distribution></license></licenses></project>''')
+        for file in directory.iterdir():
+            if file.suffix in ('.pom', '.module', '.aar', '.klib', '.jar'):
+                for algorithm in ('md5', 'sha1', 'sha256', 'sha512'):
+                    file.with_name(file.name + '.' + algorithm).write_text(hashlib.new(algorithm, file.read_bytes()).hexdigest())
 
 
 if __name__ == "__main__":

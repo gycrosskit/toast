@@ -1,12 +1,14 @@
 # GY CrossKit Toast
 
-当前源码候选为 **Maven `0.2.0-dev`，尚未发布**：移除 `toast-cmp`，仅维护 `toast` core 与 `toast-kuikly`。这是删除 CMP 公开坐标/API 的不兼容候选；旧 CMP 使用方应继续锁定已发布的 `0.1.x`，或迁移至 KuiklyCompose/native 入口，不能直接升级。
+当前源码候选为 **Maven `0.2.0-rc.1`，尚未发布**：移除 `toast-cmp`，仅维护 `toast` core 与 `toast-kuikly`。这是删除 CMP 公开坐标/API 的不兼容候选；旧 CMP 使用方应继续锁定已发布的 `0.1.x`，或迁移至 KuiklyCompose/native 入口，不能直接升级。
 
 KuiklyCompose Android/iOS/OHOS 的 `MessageHost`、CompositionLocal、Compose compiler/runtime，以及共享 Overlay 状态、规格、定时替换和销毁合同保留。Android/iOS/OHOS 原生提示与 Module 也保留；文案和本地化由宿主提供，legacy 原生提示与 Overlay 的视觉/时长合同不同。详见[功能与平台差异](docs/功能与平台差异.md)。
 
 原生 Git Pod 保持 `0.1.6`，SPM 仍仅提供 presenter，OHOS HAR 保持 `0.1.3`；本次未发布任一渠道。历史验证按原版本和日期保留，不证明当前候选通过公开消费或设备验收。
 
 历史 0.1.3 的 Maven/Swift/Git Pod/Release HAR 消费与 OHPM 审核、Registry NOTFOUND 记录见[候选验收](verification/候选验收.md)。本次未重查 Registry，当前可安装性须单独核验；Release HAR 下载不代表 Registry 安装。
+
+迁移与本轮渠道组合见 [RC 迁移说明](docs/RC迁移说明.md)。
 
 ## 平台与要求
 
@@ -108,12 +110,12 @@ dependencyResolutionManagement {
 }
 ```
 
-以下为尚未发布的候选坐标；只可在本地候选 Maven 仓库验证，公开安装需等正式不可变版本及 Release 收据：
+以下为尚未发布的候选坐标；远程构建、不可变 RC Release 和精确公开消费完成后方可安装：
 
 ```kotlin
 commonMain.dependencies {
-    implementation("com.github.gycrosskit.toast:toast-kuikly:0.2.0-dev")
-    // 仅使用 native core 时，改为依赖 toast:0.2.0-dev。
+    implementation("com.github.gycrosskit.toast:toast-kuikly:0.2.0-rc.1")
+    // 仅使用 native core 时，改为依赖 toast:0.2.0-rc.1。
 }
 ```
 
