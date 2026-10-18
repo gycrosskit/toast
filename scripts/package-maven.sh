@@ -7,7 +7,7 @@ export GROUP=com.github.gycrosskit.toast
 export ANDROID_HOME="${ANDROID_HOME:-$HOME/Library/Android/sdk}"
 # staging 为本脚本独占的生成仓库，避免混入旧版本。
 rm -rf build/maven
-bash gradlew "$@" --no-daemon --max-workers=1 -Dorg.gradle.parallel=false :toast:publishAllPublicationsToStagingRepository :toast-kuikly:publishAllPublicationsToStagingRepository
+bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" "$@" --no-daemon --max-workers=1 -Dorg.gradle.parallel=false :toast:publishAllPublicationsToStagingRepository :toast-kuikly:publishAllPublicationsToStagingRepository
 python3 scripts/jitpack-metadata.py build/maven/com/github/gycrosskit/toast
 python3 scripts/check-maven.py build/maven "$GROUP" "$VERSION" toast,toast-kuikly ios_arm64,ios_x64,ios_simulator_arm64,ohos_arm64 toast,toast-android,toast-iosarm64,toast-iosx64,toast-iossimulatorarm64,toast-ohosarm64,toast-kuikly,toast-kuikly-android,toast-kuikly-iosarm64,toast-kuikly-iosx64,toast-kuikly-iossimulatorarm64,toast-kuikly-ohosarm64
 COPYFILE_DISABLE=1 tar --no-xattrs -czf build/toast-maven.tar.gz -C build/maven com
