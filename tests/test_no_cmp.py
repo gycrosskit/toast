@@ -10,7 +10,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 GROUP = "com.github.gycrosskit.toast"
-VERSION = "0.2.0-rc.1"
+VERSION = "0.2.0-rc.2"
 PRODUCTS = ("toast", "toast-kuikly")
 TARGETS = {"android": None, "iosarm64": "ios_arm64", "iosx64": "ios_x64",
            "iossimulatorarm64": "ios_simulator_arm64", "ohosarm64": "ohos_arm64"}

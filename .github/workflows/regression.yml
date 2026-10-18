@@ -347,6 +347,7 @@ jobs:
             *) echo "Unsupported macOS architecture" >&2; exit 1 ;;
           esac
           render_dir=$(bash scripts/ci-build-kuikly-render.sh "$RUNNER_TEMP/kuikly-ios-render" GycToastNative/Kuikly toast "$NATIVE_VERSION")
+          mkdir -p ci-diagnostics
           cp "$RUNNER_TEMP/kuikly-ios-render/Podfile.lock" ci-diagnostics/release-Podfile.lock.txt
           git clone --depth 1 --single-branch --branch "$NATIVE_VERSION" https://github.com/gycrosskit/toast.git "$RUNNER_TEMP/toast-release-native"
           export TOAST_NATIVE_SOURCE="$RUNNER_TEMP/toast-release-native" TOAST_NATIVE_INSTALLED="$RUNNER_TEMP/kuikly-ios-render/Pods/GycToastNative"
