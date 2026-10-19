@@ -174,6 +174,8 @@ Apache-2.0，见 [LICENSE](LICENSE)。
 
 [Component regression](.github/workflows/regression.yml) 按事件分阶段：PR 先判断变更范围，仅源码变更运行已有 Android/Native 测试与编译；纯文档 PR 和 `main` push 只运行轻量脚本/配置检查。手动运行不填版本时执行源码回归，未知路径保守按源码处理。线上执行结果与耗时以实际 Actions 运行为准。
 
+Jenkins 源码回归试点使用受信 CI 仓库的固定 `toast-kmp` 检查：Linux 完整执行现有 contracts、Android 两模块单测/编译和源码消费者隔离检查，macOS 执行现有 Native 编译、模拟器测试和真实 Renderer/Module Pod 构建。共享 helpers 固定到 `607ff44db144c68fc6523de38c04aac29e427b68`，由控制节点校验后送入隔离节点；源码 tar 不需要 `.git`。每个平台生成 `check-report.json` 与 `junit.xml`，分别记录固定检查、Gradle task 执行/缓存/跳过和实际测试 pass/fail/skip；缺报告或整组测试跳过会失败。现有 GitHub Actions 门禁保持原状，是否通过仍以对应平台的实际运行证据为准。
+
 Maven Release 发布或手动填写精确已发布版本时，`verify-public` 统一校验一次冻结归档、精确 tag/commit、完整 publication 清单和公开文件；通过后 Android/Native 独立消费者从 JitPack 解析该版本。PR 不再反复消费旧基线；不使用 `mavenLocal`、本库源码或归档替换远程依赖。此流程不发布二进制。
 
 OHOS KLIB 编译不代表 HAR 构建、ohpm 上架或真机验收。当前没有已确认可用的 DevEco/Hvigor runner，这些检查尚未自动化，不能作为 CI 通过范围。
