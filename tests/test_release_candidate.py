@@ -14,7 +14,7 @@ workflow = json.loads(subprocess.check_output([
     'puts JSON.generate(YAML.safe_load(File.read(ARGV.fetch(0))))',
     str(ROOT / '.github/workflows/regression.yml'),
 ], text=True))
-assert workflow['jobs']['release-native']['env']['NATIVE_VERSION'] == '0.1.6'
+assert workflow['jobs']['release-native']['env']['NATIVE_VERSION'] == '1.0.0'
 for job in ('release-android', 'release-native'):
     consumers = [step['run'] for step in workflow['jobs'][job]['steps']
                  if '-p verification' in step.get('run', '')]
@@ -55,7 +55,7 @@ if os.environ.get('FIXTURE_MISSING_SIDECAR') == '1':
     next(repo.rglob('*.pom.sha512')).unlink()
 FIXTURE
 ''')
-    environment = dict(os.environ, VERSION='0.2.0-rc.2', FIXTURE_CONTRACT=str(ROOT / 'tests/test_no_cmp.py'))
+    environment = dict(os.environ, VERSION='1.0.0', FIXTURE_CONTRACT=str(ROOT / 'tests/test_no_cmp.py'))
     command = ['bash', 'scripts/package-maven.sh']
     result = subprocess.run(command, cwd=root, env=environment, capture_output=True, text=True)
     assert result.returncode == 0, result.stdout + result.stderr
@@ -93,13 +93,13 @@ esac
 ''')
     git.chmod(0o755)
     env = dict(os.environ, PATH=str(tools) + os.pathsep + os.environ['PATH'], RUNNER_TEMP=str(root),
-               VERSION='0.2.0-rc.2', NATIVE_VERSION='0.1.6', MOCK_HEAD='a' * 40, MOCK_TAG_SHA='a' * 40)
+               VERSION='1.0.0', NATIVE_VERSION='1.0.0', MOCK_HEAD='a' * 40, MOCK_TAG_SHA='a' * 40)
     for tag, version, head, changed, expected in [
-        ('0.1.6', '0.1.6', 'a' * 40, '0', True),
-        ('0.2.0-rc.2', '0.1.6', 'a' * 40, '0', False),
-        ('0.1.6', '0.2.0-rc.2', 'a' * 40, '0', False),
-        ('0.1.6', '0.1.6', 'b' * 40, '0', False),
-        ('0.1.6', '0.1.6', 'a' * 40, '1', False),
+        ('1.0.0', '1.0.0', 'a' * 40, '0', True),
+        ('0.9.9', '1.0.0', 'a' * 40, '0', False),
+        ('1.0.0', '0.9.9', 'a' * 40, '0', False),
+        ('1.0.0', '1.0.0', 'b' * 40, '0', False),
+        ('1.0.0', '1.0.0', 'a' * 40, '1', False),
     ]:
         (root / 'kuikly-ios-render/Podfile.lock').write_text(f'''PODS:
   - GycToastNative/Core ({version})
