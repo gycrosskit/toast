@@ -20,7 +20,7 @@ KuiklyCompose Android/iOS/OHOS 的 `MessageHost`、CompositionLocal、Compose co
 | iOS | Overlay用`toast-kuikly`；legacy用KMP bridge+`GycToastNative`或Swift/Pod | iOS 15+，Swift tools 5.9（原生包） |
 | HarmonyOS | Overlay用`toast-kuikly`；legacy用Module+`toast-native` HAR或ArkTS | 当前 HAR 的 target/compatible SDK 均为 API 22；`openToast/closeToast` API 本身从 API 18 提供 |
 
-KMP 使用 Kotlin `2.2.21-1.0.0`，Kuikly 使用 `2.28.0-2.0.21-ohos`。`toast-core/` 的 Gradle 模块名及公开 Maven artifact 为 `toast`。
+KMP 使用 Kotlin `2.2.21-1.0.0`，Kuikly 使用 `2.29.1-2.0.21-ohos`。 Kuikly 后续升级跟随宿主；KMP 坐标、iOS Pod 与 OHOS Renderer 同步对齐，重新验收对应源码 SHA。`toast-core/` 的 Gradle 模块名及公开 Maven artifact 为 `toast`。
 
 ## 架构与调用流程
 
