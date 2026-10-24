@@ -1,5 +1,10 @@
 # 更新记录
 
+## 未发布：宿主 Kuikly 版本对齐
+
+- KMP / Android 使用 `2.29.1-2.0.21-ohos`，iOS Pod 与 OHOS Renderer 统一 `2.29.1`；以后跟随宿主同步升级。
+- 构建、Native Renderer、消费与 Jenkins 完整验收按本次新源码 SHA 重新记录；历史版本和历史验收保留原值。
+
 ## 0.2.0-rc.2（RC 准备，尚未发布）
 
 - 修复公开 Native 消费在复制 Podfile.lock 前未创建 `ci-diagnostics`，导致 rc.1 在 Pod/Renderer 构建成功后提前退出的问题；从不存在日志目录的 fixture 覆盖此顺序。
