@@ -3,7 +3,7 @@ plugins {
     kotlin("plugin.compose") version "2.2.21-1.0.0"
     id("com.android.library") version "8.10.1"
 }
-val toastVersion = providers.gradleProperty("toastVersion").orElse("0.2.0-rc.2").get()
+val toastVersion = providers.gradleProperty("toastVersion").orElse("1.0.0").get()
 val verifyLocalSource = providers.gradleProperty("verifyLocalSource").isPresent
 check(!verifyLocalSource || !providers.gradleProperty("remoteOnly").isPresent) { "Local source and remote-only validation are separate modes" }
 val kuiklyRenderFrameworkDir = providers.gradleProperty("kuiklyRenderFrameworkDir").orNull
