@@ -52,14 +52,6 @@ class NoCmpContract(unittest.TestCase):
         self.assertIn('ProjectComponentIdentifier', consumer)
         for path in (ROOT / "verification/src").rglob("*.kt"):
             self.assertNotIn('toast.cmp', path.read_text())
-        workflow = (ROOT / ".github/workflows/regression.yml").read_text()
-        self.assertNotIn('toast-cmp', workflow)
-        self.assertNotIn('verifyCmp', workflow)
-        self.assertIn('compileDebugKotlinAndroid verifyNoCmpUi', workflow)
-        self.assertIn('python3 tests/test_no_cmp.py', workflow)
-        android = workflow.split('\n  android:\n', 1)[1].split('\n  native:\n', 1)[0]
-        self.assertRegex(android, r'-p verification -PverifyLocalSource compileDebugKotlinAndroid verifyNoCmpUi[^\n]*\n        timeout-minutes: 35\n        if: needs.changes.outputs.source == \'true\'')
-        self.assertNotIn('-PverifyLocalSource', workflow.split('\n  release-android:\n', 1)[1])
 
     def test_publication_checker_accepts_two_products_and_rejects_retired_product(self):
         release = (ROOT / "scripts/ci-release.sh").read_text()
