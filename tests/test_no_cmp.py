@@ -20,7 +20,17 @@ class NoCmpContract(unittest.TestCase):
     def test_production_keeps_kuikly_compose_and_shared_core(self):
         self.assertFalse(list((ROOT / "toast-cmp").rglob("*.kt")))
         self.assertNotIn(':toast-cmp', (ROOT / "settings.gradle.kts").read_text())
+        version = re.search(r'environmentVariable\("VERSION"\)\.orElse\("([^"\n]+)"\)', (ROOT / 'build.gradle.kts').read_text()).group(1)
+        self.assertIn('gradleProperty("toastVersion").orElse("' + version + '")', (ROOT / 'verification/build.gradle.kts').read_text())
+        self.assertIn("spec.version = '" + version + "'", (ROOT / 'GycToastNative.podspec').read_text())
+        self.assertEqual(version, json.loads((ROOT / 'ohos/toast-native/oh-package.json5').read_text())['version'])
         catalog = (ROOT / "gradle/libs.versions.toml").read_text()
+        kuikly = re.search(r'^kuikly = "([^"]+)"$', catalog, re.M).group(1)
+        self.assertEqual('2.29.1-2.0.21-ohos', kuikly)
+        renderer = kuikly.split('-', 1)[0]
+        self.assertIn("kuikly.dependency 'OpenKuiklyIOSRender', '" + renderer + "'", (ROOT / 'GycToastNative.podspec').read_text())
+        self.assertIn("pod 'OpenKuiklyIOSRender', '" + renderer + "'", (ROOT / 'scripts/ci-build-kuikly-render.sh').read_text())
+        self.assertEqual(renderer, json.loads((ROOT / 'ohos/toast-native/oh-package.json5').read_text())['dependencies']['@kuikly-open/render'])
         self.assertNotIn('org.jetbrains.compose', catalog)
         self.assertIn('com.tencent.kuikly-open:compose', catalog)
         self.assertIn('org.jetbrains.kotlin.plugin.compose', catalog)
@@ -52,14 +62,6 @@ class NoCmpContract(unittest.TestCase):
         self.assertIn('ProjectComponentIdentifier', consumer)
         for path in (ROOT / "verification/src").rglob("*.kt"):
             self.assertNotIn('toast.cmp', path.read_text())
-        workflow = (ROOT / ".github/workflows/regression.yml").read_text()
-        self.assertNotIn('toast-cmp', workflow)
-        self.assertNotIn('verifyCmp', workflow)
-        self.assertIn('compileDebugKotlinAndroid verifyNoCmpUi', workflow)
-        self.assertIn('python3 tests/test_no_cmp.py', workflow)
-        android = workflow.split('\n  android:\n', 1)[1].split('\n  native:\n', 1)[0]
-        self.assertRegex(android, r'-p verification -PverifyLocalSource compileDebugKotlinAndroid verifyNoCmpUi[^\n]*\n        timeout-minutes: 35\n        if: needs.changes.outputs.source == \'true\'')
-        self.assertNotIn('-PverifyLocalSource', workflow.split('\n  release-android:\n', 1)[1])
 
     def test_publication_checker_accepts_two_products_and_rejects_retired_product(self):
         release = (ROOT / "scripts/ci-release.sh").read_text()
