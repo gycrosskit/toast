@@ -20,6 +20,10 @@ class NoCmpContract(unittest.TestCase):
     def test_production_keeps_kuikly_compose_and_shared_core(self):
         self.assertFalse(list((ROOT / "toast-cmp").rglob("*.kt")))
         self.assertNotIn(':toast-cmp', (ROOT / "settings.gradle.kts").read_text())
+        version = re.search(r'environmentVariable\("VERSION"\)\.orElse\("([^"\n]+)"\)', (ROOT / 'build.gradle.kts').read_text()).group(1)
+        self.assertIn('gradleProperty("toastVersion").orElse("' + version + '")', (ROOT / 'verification/build.gradle.kts').read_text())
+        self.assertIn("spec.version = '" + version + "'", (ROOT / 'GycToastNative.podspec').read_text())
+        self.assertEqual(version, json.loads((ROOT / 'ohos/toast-native/oh-package.json5').read_text())['version'])
         catalog = (ROOT / "gradle/libs.versions.toml").read_text()
         kuikly = re.search(r'^kuikly = "([^"]+)"$', catalog, re.M).group(1)
         self.assertEqual('2.29.1-2.0.21-ohos', kuikly)
