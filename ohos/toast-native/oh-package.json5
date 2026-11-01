@@ -1,6 +1,6 @@
 {
   "name": "@gycrosskit/toast-native",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Native HarmonyOS toast presenter and Kuikly module",
   "main": "Index.ets",
   "author": {

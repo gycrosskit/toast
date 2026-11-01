@@ -2,17 +2,17 @@
 
 Kuikly 由宿主统一选择版本；组件构建基线、允许范围及消费验证边界见[功能与平台差异](docs/功能与平台差异.md#kuikly-版本与宿主选择)。
 
-> 当前源码候选统一为 **1.0.1**：Maven（core/Kuikly）、iOS Pod 与 OHPM 使用同版；尚未发布，示例坐标须待发布后远程消费。本地验证使用显式源码/本地 HAR，Kuikly 基线为 2.29.1，真机与新版本远程消费另验。
+> iOS Git Pod `1.0.2`（`native-1.0.2`），HAR/OHPM `1.0.2`（`har-1.0.2`）；Maven 保留 `1.0.1`。发布与精确消费状态见对应 Release；旧 Tag、归档及摘要不变。
 
-当前源码为未发布的 Kuikly 2.29.1 配套候选；带发布标签的说明保留历史范围。新增 API 必须消费配套源码，不能用旧远程版本验证代替。
+组件构建最低基线为 Kuikly 2.29.1；允许范围、宿主选择及 2.30 消费边界见[功能与平台差异](docs/功能与平台差异.md#kuikly-版本与宿主选择)。带日期的历史结果不代替当前渠道验收。
 
-当前源码候选为 **Maven / iOS Pod / OHPM `1.0.1`，尚未发布**：移除 `toast-cmp`，仅维护 `toast` core 与 `toast-kuikly`。这是删除 CMP 公开坐标/API 的不兼容候选；旧 CMP 使用方应继续锁定已发布的 `0.1.x`，或迁移至 KuiklyCompose/native 入口，不能直接升级。
+当前 Maven 保留 `1.0.1`，Git Pod 与 HAR/OHPM 为 `1.0.2`：移除 `toast-cmp`，仅维护 `toast` core 与 `toast-kuikly`。这是删除 CMP 公开坐标/API 的不兼容候选；旧 CMP 使用方应继续锁定已发布的 `0.1.x`，或迁移至 KuiklyCompose/native 入口，不能直接升级。
 
 KuiklyCompose Android/iOS/OHOS 的 `MessageHost`、CompositionLocal、Compose compiler/runtime，以及共享 Overlay 状态、规格、定时替换和销毁合同保留。Android/iOS/OHOS 原生提示与 Module 也保留；文案和本地化由宿主提供，legacy 原生提示与 Overlay 的视觉/时长合同不同。详见[功能与平台差异](docs/功能与平台差异.md)。
 
 `0.2.0-rc.1` 已发布；其公开制品检查与 Android 消费通过，Native job 在 Pod/Renderer 构建成功后因日志目录缺失退出，尚未执行 Maven Native 最终链接。本候选修复该 CI 顺序，旧 tag、归档和 checksum 保留。
 
-原生 Git Pod 和 OHOS HAR 同步为 `1.0.1`，SPM 仍仅提供 presenter；本次未发布任一渠道。历史验证按原版本和日期保留，不证明当前候选通过公开消费或设备验收。
+Git Pod 和 HAR/OHPM 为 `1.0.2`，分别使用 `native-1.0.2` 与 `har-1.0.2`；SPM 仍仅提供 presenter，版本不随 Pod/HAR 改动。历史验证按原版本和日期保留，不证明当前候选通过公开消费或设备验收。
 
 历史 0.1.3 的 Maven/Swift/Git Pod/Release HAR 消费与 OHPM 审核、Registry NOTFOUND 记录见[候选验收](verification/候选验收.md)。本次未重查 Registry，当前可安装性须单独核验；Release HAR 下载不代表 Registry 安装。
 
@@ -132,7 +132,7 @@ iOS 在 Xcode 的 Package Dependencies 添加 `https://github.com/gycrosskit/toa
 HarmonyOS 原生包独立安装，候选正式可查询后执行；发布接受与 Registry 可安装分别核验：
 
 ```sh
-ohpm install @gycrosskit/toast-native@1.0.1
+ohpm install @gycrosskit/toast-native@1.0.2
 ```
 
 旧稳定 `0.1.2` 有 Git tag、JitPack Maven 和 OHPM 包，未补写旧 Release。历史 `1.0.0` 的 Swift Package 和 Git Pod 已分别完成独立真实原生消费：公开 API 编译及动态消费者/framework 最终链接均通过，产物为 arm64/x86_64 iOS Simulator Mach-O。SPM 锁定发布提交，Git Pod framework 版本为 1.0.0；这两个渠道单独验收，不以 KMP framework 链接代替。 该历史结果不代表 `1.0.1` 已通过。
