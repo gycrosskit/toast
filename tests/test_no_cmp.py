@@ -22,15 +22,21 @@ class NoCmpContract(unittest.TestCase):
         self.assertNotIn(':toast-cmp', (ROOT / "settings.gradle.kts").read_text())
         version = re.search(r'environmentVariable\("VERSION"\)\.orElse\("([^"\n]+)"\)', (ROOT / 'build.gradle.kts').read_text()).group(1)
         self.assertIn('gradleProperty("toastVersion").orElse("' + version + '")', (ROOT / 'verification/build.gradle.kts').read_text())
-        self.assertIn("spec.version = '" + version + "'", (ROOT / 'GycToastNative.podspec').read_text())
-        self.assertEqual(version, json.loads((ROOT / 'ohos/toast-native/oh-package.json5').read_text())['version'])
+        pod = (ROOT / 'GycToastNative.podspec').read_text()
+        versions = {
+            'maven': version,
+            'pod': re.search(r"spec\.version = '([^']+)'", pod).group(1),
+            'har': json.loads((ROOT / 'ohos/toast-native/oh-package.json5').read_text())['version'],
+        }
+        self.assertEqual({'maven': '1.0.1', 'pod': '1.0.2', 'har': '1.0.2'}, versions)
+        self.assertIn(':tag => "native-#{spec.version}"', pod)
         catalog = (ROOT / "gradle/libs.versions.toml").read_text()
         kuikly = re.search(r'^kuikly = "([^"]+)"$', catalog, re.M).group(1)
         self.assertEqual('2.29.1-2.0.21-ohos', kuikly)
         renderer = kuikly.split('-', 1)[0]
-        self.assertIn("kuikly.dependency 'OpenKuiklyIOSRender', '" + renderer + "'", (ROOT / 'GycToastNative.podspec').read_text())
+        self.assertIn("kuikly.dependency 'OpenKuiklyIOSRender', '>= " + renderer + "', '< 3.0'", (ROOT / 'GycToastNative.podspec').read_text())
         self.assertIn("pod 'OpenKuiklyIOSRender', '" + renderer + "'", (ROOT / 'scripts/ci-build-kuikly-render.sh').read_text())
-        self.assertEqual(renderer, json.loads((ROOT / 'ohos/toast-native/oh-package.json5').read_text())['dependencies']['@kuikly-open/render'])
+        self.assertEqual('^' + renderer, json.loads((ROOT / 'ohos/toast-native/oh-package.json5').read_text())['dependencies']['@kuikly-open/render'])
         self.assertNotIn('org.jetbrains.compose', catalog)
         self.assertIn('com.tencent.kuikly-open:compose', catalog)
         self.assertIn('org.jetbrains.kotlin.plugin.compose', catalog)
