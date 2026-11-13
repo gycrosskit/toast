@@ -6,7 +6,7 @@ Kuikly 由宿主统一选择版本；组件构建基线、允许范围及消费�
 
 组件构建最低基线为 Kuikly 2.29.1；允许范围、宿主选择及 2.30 消费边界见[功能与平台差异](docs/功能与平台差异.md#kuikly-版本与宿主选择)。带日期的历史结果不代替当前渠道验收。
 
-当前 Maven 保留 `1.0.1`，Git Pod 与 HAR/OHPM 为 `1.0.2`：移除 `toast-cmp`，仅维护 `toast` core 与 `toast-kuikly`。这是删除 CMP 公开坐标/API 的不兼容候选；旧 CMP 使用方应继续锁定已发布的 `0.1.x`，或迁移至 KuiklyCompose/native 入口，不能直接升级。
+当前 Maven 保留 `1.0.1`，Git Pod 与 HAR/OHPM 为 `1.0.2`：移除 `toast-cmp`，仅维护 `toast` core 与 `toast-kuikly`。这是删除 CMP 公开坐标/API 的不兼容变更；旧 CMP 使用方应继续锁定已发布的 `0.1.x`，或迁移至 KuiklyCompose/native 入口，不能直接升级。
 
 KuiklyCompose Android/iOS/OHOS 的 `MessageHost`、CompositionLocal、Compose compiler/runtime，以及共享 Overlay 状态、规格、定时替换和销毁合同保留。Android/iOS/OHOS 原生提示与 Module 也保留；文案和本地化由宿主提供，legacy 原生提示与 Overlay 的视觉/时长合同不同。详见[功能与平台差异](docs/功能与平台差异.md)。
 
@@ -118,7 +118,7 @@ dependencyResolutionManagement {
 }
 ```
 
-以下为尚未发布的候选坐标；远程构建、不可变 RC Release 和精确公开消费完成后方可安装：
+以下为已发布 [Maven `1.0.1`](https://github.com/gycrosskit/toast/releases/tag/1.0.1) 的精确坐标；Release 归档、JitPack 解析与精确消费须分别核验：
 
 ```kotlin
 commonMain.dependencies {
@@ -127,9 +127,9 @@ commonMain.dependencies {
 }
 ```
 
-iOS 在 Xcode 的 Package Dependencies 添加 `https://github.com/gycrosskit/toast.git`，候选发布后选择精确版本 `1.0.1`，产品 `GycToastNative`。CocoaPods 可按 Git tag 安装，见接入指南。
+iOS 在 Xcode 的 Package Dependencies 添加 `https://github.com/gycrosskit/toast.git`，选择精确 Tag `1.0.1`，产品 `GycToastNative`；SPM 消费须独立核验。CocoaPods 使用独立的 `native-1.0.2` Tag，见接入指南。
 
-HarmonyOS 原生包独立安装，候选正式可查询后执行；发布接受与 Registry 可安装分别核验：
+HarmonyOS 已有 [HAR `1.0.2` Release](https://github.com/gycrosskit/toast/releases/tag/har-1.0.2)，下方原生包安装命令须以对应 Registry 精确查询结果为准；Release 下载与 Registry 可安装分别核验：
 
 ```sh
 ohpm install @gycrosskit/toast-native@1.0.2
