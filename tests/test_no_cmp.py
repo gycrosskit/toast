@@ -36,7 +36,7 @@ class NoCmpContract(unittest.TestCase):
         renderer = kuikly.split('-', 1)[0]
         self.assertIn("kuikly.dependency 'OpenKuiklyIOSRender', '>= " + renderer + "', '< 3.0'", (ROOT / 'GycToastNative.podspec').read_text())
         self.assertIn("pod 'OpenKuiklyIOSRender', '" + renderer + "'", (ROOT / 'scripts/ci-build-kuikly-render.sh').read_text())
-        self.assertEqual('^' + renderer, json.loads((ROOT / 'ohos/toast-native/oh-package.json5').read_text())['dependencies']['@kuikly-open/render'])
+        self.assertEqual(renderer, json.loads((ROOT / 'ohos/toast-native/oh-package.json5').read_text())['dependencies']['@kuikly-open/render'])
         self.assertNotIn('org.jetbrains.compose', catalog)
         self.assertIn('com.tencent.kuikly-open:compose', catalog)
         self.assertIn('org.jetbrains.kotlin.plugin.compose', catalog)
