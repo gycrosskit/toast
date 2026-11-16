@@ -2,21 +2,15 @@
 
 Kuikly 由宿主统一选择版本；组件构建基线、允许范围及消费验证边界见[功能与平台差异](docs/功能与平台差异.md#kuikly-版本与宿主选择)。
 
-> iOS Git Pod `1.0.2`（`native-1.0.2`），HAR/OHPM `1.0.2`（`har-1.0.2`）；Maven 保留 `1.0.1`。发布与精确消费状态见对应 Release；旧 Tag、归档及摘要不变。
+当前已发布 Maven 为 [`1.0.1`](https://github.com/gycrosskit/toast/releases/tag/1.0.1)，Git Pod 与 HAR/OHPM 为 `1.0.2`（`native-1.0.2` / `har-1.0.2`）。本轮只准备 Maven `1.0.2` 候选，尚未发布；沿用现有 Native/HAR，不改旧 Tag、归档或摘要。Maven Tag 同时提供 SPM presenter 源码，SPM 与 Maven 消费仍分别验收。
 
-组件构建最低基线为 Kuikly 2.29.1；允许范围、宿主选择及 2.30 消费边界见[功能与平台差异](docs/功能与平台差异.md#kuikly-版本与宿主选择)。带日期的历史结果不代替当前渠道验收。
+Harmony 后续仅使用受信私 OHPM。当前私库元数据已有 `@gycrosskit/toast-native@1.0.2`；历史 HAR Release 保留，私库元数据可查询不等于安装或宿主消费已通过。本地构建继续调用项目入口，日常 CI 不串联测试或独立消费者。正式发布统一使用新版 `component-ci/release`，本地 package 不创建 Tag 或上传。
 
-当前 Maven 保留 `1.0.1`，Git Pod 与 HAR/OHPM 为 `1.0.2`：移除 `toast-cmp`，仅维护 `toast` core 与 `toast-kuikly`。这是删除 CMP 公开坐标/API 的不兼容候选；旧 CMP 使用方应继续锁定已发布的 `0.1.x`，或迁移至 KuiklyCompose/native 入口，不能直接升级。
+当前只维护 `toast` core 与 `toast-kuikly`，已移除 `toast-cmp`。这是删除 CMP 公开坐标/API 的不兼容变更；旧 CMP 使用方应继续锁定已发布的 `0.1.x`，或迁移至 KuiklyCompose/native 入口，不能直接升级。
 
 KuiklyCompose Android/iOS/OHOS 的 `MessageHost`、CompositionLocal、Compose compiler/runtime，以及共享 Overlay 状态、规格、定时替换和销毁合同保留。Android/iOS/OHOS 原生提示与 Module 也保留；文案和本地化由宿主提供，legacy 原生提示与 Overlay 的视觉/时长合同不同。详见[功能与平台差异](docs/功能与平台差异.md)。
 
-`0.2.0-rc.1` 已发布；其公开制品检查与 Android 消费通过，Native job 在 Pod/Renderer 构建成功后因日志目录缺失退出，尚未执行 Maven Native 最终链接。本候选修复该 CI 顺序，旧 tag、归档和 checksum 保留。
-
-Git Pod 和 HAR/OHPM 为 `1.0.2`，分别使用 `native-1.0.2` 与 `har-1.0.2`；SPM 仍仅提供 presenter，版本不随 Pod/HAR 改动。历史验证按原版本和日期保留，不证明当前候选通过公开消费或设备验收。
-
-历史 0.1.3 的 Maven/Swift/Git Pod/Release HAR 消费与 OHPM 审核、Registry NOTFOUND 记录见[候选验收](verification/候选验收.md)。本次未重查 Registry，当前可安装性须单独核验；Release HAR 下载不代表 Registry 安装。
-
-迁移与本轮渠道组合见 [RC 迁移说明](docs/RC迁移说明.md)。
+历史 0.1.x / RC 的发布、消费与 Registry 记录见[候选验收](verification/候选验收.md)和[RC 迁移说明](docs/RC迁移说明.md)，不代算本轮精确公开消费或设备验收。当前 Registry 可安装性须独立核验，Release HAR 下载不等于 Registry 安装。
 
 ## 平台与要求
 
@@ -118,24 +112,24 @@ dependencyResolutionManagement {
 }
 ```
 
-以下为尚未发布的候选坐标；远程构建、不可变 RC Release 和精确公开消费完成后方可安装：
+以下为 Maven `1.0.2` 未发布候选坐标；发布前继续使用 `1.0.1`，Release 归档、JitPack 解析与精确消费须分别核验：
 
 ```kotlin
 commonMain.dependencies {
-    implementation("com.github.gycrosskit.toast:toast-kuikly:1.0.1")
-    // 仅使用 native core 时，改为依赖 toast:1.0.1。
+    implementation("com.github.gycrosskit.toast:toast-kuikly:1.0.2")
+    // 仅使用 native core 时，改为依赖 toast:1.0.2。
 }
 ```
 
-iOS 在 Xcode 的 Package Dependencies 添加 `https://github.com/gycrosskit/toast.git`，候选发布后选择精确版本 `1.0.1`，产品 `GycToastNative`。CocoaPods 可按 Git tag 安装，见接入指南。
+iOS 在 Xcode 的 Package Dependencies 添加 `https://github.com/gycrosskit/toast.git`，候选发布后选择精确 Tag `1.0.2`，产品 `GycToastNative`；SPM 消费须独立核验。CocoaPods 使用独立的 `native-1.0.2` Tag，见接入指南。
 
-HarmonyOS 原生包独立安装，候选正式可查询后执行；发布接受与 Registry 可安装分别核验：
+HarmonyOS 已有 [HAR `1.0.2` Release](https://github.com/gycrosskit/toast/releases/tag/har-1.0.2)，下方原生包安装命令须以对应 Registry 精确查询结果为准；Release 下载与 Registry 可安装分别核验：
 
 ```sh
 ohpm install @gycrosskit/toast-native@1.0.2
 ```
 
-旧稳定 `0.1.2` 有 Git tag、JitPack Maven 和 OHPM 包，未补写旧 Release。历史 `1.0.0` 的 Swift Package 和 Git Pod 已分别完成独立真实原生消费：公开 API 编译及动态消费者/framework 最终链接均通过，产物为 arm64/x86_64 iOS Simulator Mach-O。SPM 锁定发布提交，Git Pod framework 版本为 1.0.0；这两个渠道单独验收，不以 KMP framework 链接代替。 该历史结果不代表 `1.0.1` 已通过。
+旧稳定 `0.1.2` 有 Git tag、JitPack Maven 和 OHPM 包，未补写旧 Release。历史 `1.0.0` 的 Swift Package 和 Git Pod 已分别完成独立真实原生消费：公开 API 编译及动态消费者/framework 最终链接均通过，产物为 arm64/x86_64 iOS Simulator Mach-O。SPM 锁定发布提交，Git Pod framework 版本为 1.0.0；这两个渠道单独验收，不以 KMP framework 链接代替。 该历史结果不代表本轮 `1.0.2` 已通过。
 
 ## 最小使用
 

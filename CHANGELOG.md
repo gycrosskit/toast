@@ -1,5 +1,11 @@
 # 更新记录
 
+## 1.0.2（Maven 候选，尚未发布）
+
+- Maven 默认版本、独立消费者及版本 guard 对齐现有 Native/HAR `1.0.2`，不重发 Native/HAR。
+- 回流 main 的准确发布与接入说明，保留 dev 的 JDK 21；core、KuiklyCompose/runtime、原生 presenter 与生命周期合同保持。
+- Maven Tag 同时提供现有 SPM presenter 源码；各渠道发布和精确消费分别验收，旧标签、归档与摘要不变。
+
 ## Native/HAR 1.0.2
 
 - iOS Git Pod 使用 `native-1.0.2`，HAR/OHPM 使用 `har-1.0.2`；Maven 保留 `1.0.1`，不重发未修改的 KMP 产物。

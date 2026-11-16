@@ -28,7 +28,7 @@ class NoCmpContract(unittest.TestCase):
             'pod': re.search(r"spec\.version = '([^']+)'", pod).group(1),
             'har': json.loads((ROOT / 'ohos/toast-native/oh-package.json5').read_text())['version'],
         }
-        self.assertEqual({'maven': '1.0.1', 'pod': '1.0.2', 'har': '1.0.2'}, versions)
+        self.assertEqual({'maven': '1.0.2', 'pod': '1.0.2', 'har': '1.0.2'}, versions)
         self.assertIn(':tag => "native-#{spec.version}"', pod)
         catalog = (ROOT / "gradle/libs.versions.toml").read_text()
         kuikly = re.search(r'^kuikly = "([^"]+)"$', catalog, re.M).group(1)

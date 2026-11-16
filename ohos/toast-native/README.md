@@ -1,6 +1,6 @@
 # @gycrosskit/toast-native
 
-> iOS Git Pod `1.0.2`（`native-1.0.2`），HAR/OHPM `1.0.2`（`har-1.0.2`）；Maven 保留 `1.0.1`。发布与精确消费状态见对应 Release；旧 Tag、归档及摘要不变。
+本轮构建将 `@kuikly-open/render` 固定为既有基线 `2.29.1`，避免安装时因范围解析升级 Renderer；厂商 SDK 与公开 API 不变。
 
 新消息替换旧消息的 HarmonyOS 短消息展示。当前 HAR target/compatible SDK 为 HarmonyOS API 22。
 
@@ -8,7 +8,7 @@
 ohpm install @gycrosskit/toast-native@1.0.2
 ```
 
-HAR/Pod 为 `1.0.2`，Maven 保留 `1.0.1`；发布与消费状态见对应 Release。历史0.1.3轮次Registry查询/安装曾返回NOTFOUND；旧轮次仅文档更新且未重查 Registry，不能据旧记录声称当前可安装或仍审核。Release HAR下载/编译与Registry独立。共同KuiklyCompose Overlay不由此HAR绘制，功能/限制见[功能与平台差异](../../docs/功能与平台差异.md)。
+HAR/Pod 沿用现有 `1.0.2`，本轮不重发；Maven 候选与渠道状态见 [根 README](../../README.md)。历史0.1.3轮次Registry查询/安装曾返回NOTFOUND；旧轮次仅文档更新且未重查 Registry，不能据旧记录声称当前可安装或仍审核。Release HAR下载/编译与Registry独立。共同KuiklyCompose Overlay不由此HAR绘制，功能/限制见[功能与平台差异](../../docs/功能与平台差异.md)。
 
 ```typescript
 import { GycToastPresenter } from '@gycrosskit/toast-native';
