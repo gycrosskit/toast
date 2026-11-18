@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
+cd "$(dirname "$0")/.."
 : "${VERSION:?Provide an immutable release tag}"
 [[ "$VERSION" =~ ^[0-9][0-9A-Za-z._-]*$ ]] || { echo 'Invalid release tag' >&2; exit 1; }
-checksum="$(awk -v version="$VERSION" '$1 == version {print $2}' release-checksums.txt)"
-[[ "$checksum" =~ ^[a-f0-9]{64}$ ]] || { echo "No verified checksum for $VERSION" >&2; exit 1; }
 staging="$(mktemp -d)"
 preserve_evidence() {
   status=$?
@@ -14,23 +13,15 @@ preserve_evidence() {
   exit "$status"
 }
 trap preserve_evidence EXIT
-archive="$staging/toast-maven.tar.gz"
-curl -fsSL --retry 3 --connect-timeout 30 --max-time 300 -o "$archive" "https://github.com/gycrosskit/toast/releases/download/$VERSION/toast-maven.tar.gz"
-echo "$checksum  $archive" | shasum -a 256 -c -
-python3 - "$archive" "$staging/maven" <<'EXTRACT'
-import sys, tarfile
-from pathlib import Path
-archive, destination = sys.argv[1:]
-root = Path(destination).resolve()
-with tarfile.open(archive) as bundle:
-    for item in bundle.getmembers():
-        assert item.isfile() or item.isdir(), f"Unexpected archive member: {item.name}"
-        assert (root / item.name).resolve().is_relative_to(root), item.name
-    bundle.extractall(root)
-EXTRACT
+# 从不可变版本 Tag 取得提交和 tree，沿用 JitPack 的回执与归档校验。
+repo_root="$PWD"
+git init -q "$staging/tag"
+git -C "$staging/tag" fetch -q --no-tags --depth=1 https://github.com/gycrosskit/toast.git "refs/tags/$VERSION"
+git -C "$staging/tag" checkout -q --detach FETCH_HEAD
+commit="$(git -C "$staging/tag" rev-parse --verify HEAD)"
+(cd "$staging/tag" && bash "$repo_root/jitpack-install.sh" toast "$staging/maven")
 python3 scripts/check-maven.py "$staging/maven" com.github.gycrosskit.toast "$VERSION" toast,toast-kuikly ios_arm64,ios_x64,ios_simulator_arm64,ohos_arm64
 # 标签必须解析为不可变发布提交；不把当前 PR 的 SHA 当成已发布版本。
-commit="$(git ls-remote https://github.com/gycrosskit/toast.git "refs/tags/$VERSION" "refs/tags/$VERSION^{}" | awk '$2 ~ /\^\{\}$/ {peeled=$1} $2 !~ /\^\{\}$/ {direct=$1} END {print peeled ? peeled : direct}')"
 publications=toast,toast-android,toast-iosarm64,toast-iosx64,toast-iossimulatorarm64,toast-ohosarm64,toast-kuikly,toast-kuikly-android,toast-kuikly-iosarm64,toast-kuikly-iosx64,toast-kuikly-iossimulatorarm64,toast-kuikly-ohosarm64
 python3 scripts/check-public-maven.py --repo toast --version "$VERSION" --commit "$commit" \
   --expected-publications "$publications" --output-dir "${CI_DIAGNOSTICS_DIR:-ci-diagnostics}/public"
