@@ -8,7 +8,7 @@
 ohpm install @gycrosskit/toast-native@1.0.2
 ```
 
-HAR/Pod 沿用现有 `1.0.2`，本轮不重发；Maven 候选与渠道状态见 [根 README](../../README.md)。历史0.1.3轮次Registry查询/安装曾返回NOTFOUND；旧轮次仅文档更新且未重查 Registry，不能据旧记录声称当前可安装或仍审核。Release HAR下载/编译与Registry独立。共同KuiklyCompose Overlay不由此HAR绘制，功能/限制见[功能与平台差异](../../docs/功能与平台差异.md)。
+HAR/Pod 沿用现有 `1.0.2`，本轮不重发；Maven 候选与渠道状态见 [根 README](../../README.md)。历史0.1.3轮次Registry查询/安装曾返回NOTFOUND；旧轮次仅文档更新且未重查 Registry，不能据旧记录声称当前可安装或仍审核。私有 OHPM 下载、安装与设备验收分别记录。共同KuiklyCompose Overlay不由此HAR绘制，功能/限制见[功能与平台差异](../../docs/功能与平台差异.md)。
 
 ```typescript
 import { GycToastPresenter } from '@gycrosskit/toast-native';

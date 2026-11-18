@@ -1,8 +1,10 @@
 # GY CrossKit Toast
 
+新版 Maven 发布由 Jenkins 生成同版本归档、`source-receipt.json` 和 `SHA256SUMS`。JitPack 核对标签来源、归档尺寸和摘要后安装同一份制品。历史发布按原版本 Tag 复验。
+
 Kuikly 由宿主统一选择版本；组件构建基线、允许范围及消费验证边界见[功能与平台差异](docs/功能与平台差异.md#kuikly-版本与宿主选择)。
 
-当前已发布 Maven 为 [`1.0.1`](https://github.com/gycrosskit/toast/releases/tag/1.0.1)，Git Pod 与 HAR/OHPM 为 `1.0.2`（`native-1.0.2` / `har-1.0.2`）。本轮只准备 Maven `1.0.2` 候选，尚未发布；沿用现有 Native/HAR，不改旧 Tag、归档或摘要。Maven Tag 同时提供 SPM presenter 源码，SPM 与 Maven 消费仍分别验收。
+当前已发布 Maven 为 [`1.0.1`](https://github.com/gycrosskit/toast/releases/tag/1.0.1)，Git Pod `native-1.0.2` 与私有 OHPM `1.0.2` 已发布。本轮只准备 Maven `1.0.2` 候选，尚未发布。Maven Tag 同时提供 SPM presenter 源码，SPM 与 Maven 消费仍分别验收。
 
 Harmony 后续仅使用受信私 OHPM。当前私库元数据已有 `@gycrosskit/toast-native@1.0.2`；历史 HAR Release 保留，私库元数据可查询不等于安装或宿主消费已通过。本地构建继续调用项目入口，日常 CI 不串联测试或独立消费者。正式发布统一使用新版 `component-ci/release`，本地 package 不创建 Tag 或上传。
 
@@ -123,7 +125,7 @@ commonMain.dependencies {
 
 iOS 在 Xcode 的 Package Dependencies 添加 `https://github.com/gycrosskit/toast.git`，候选发布后选择精确 Tag `1.0.2`，产品 `GycToastNative`；SPM 消费须独立核验。CocoaPods 使用独立的 `native-1.0.2` Tag，见接入指南。
 
-HarmonyOS 已有 [HAR `1.0.2` Release](https://github.com/gycrosskit/toast/releases/tag/har-1.0.2)，下方原生包安装命令须以对应 Registry 精确查询结果为准；Release 下载与 Registry 可安装分别核验：
+HarmonyOS 通过私有 OHPM 安装精确版本 `1.0.2`；以对应 Registry 查询与发布回执为准：
 
 ```sh
 ohpm install @gycrosskit/toast-native@1.0.2
