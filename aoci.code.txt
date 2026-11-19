@@ -1,0 +1,156 @@
+#AOCI-CODE-VOLUME: 1
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/===
+.gitattributes[FC3T]: F:规定文本检出为 LF，维持 AOCI 字节指纹可复查 | R:- | A:- | S:-
+.gitignore[FC3T]: F:忽略本地构建、原生工具缓存和机器相关 MCP 配置 | R:- | A:- | S:-
+AGENTS.md[SG6S]: F:规定组件评审及索引维护，列出 Overlay 和 legacy 提示的 owner 与时序边界 | R:code:README.md | A:aoci_rules,aoci_overview,aoci_maintain | S:旧 dismiss 不影响新消息；页面销毁不能取消其他页面的原生 presenter
+CHANGELOG.md[SV4T]: F:记录 Maven、Git Pod 和 OHPM 的候选、发布及历史版本差异 | R:code:README.md,code:docs/开发与验证.md | A:- | S:-
+GycToastNative.podspec[FV6T]: F:从 native 版本标签声明最低 iOS 15 的 Core 和 Kuikly 两个 CocoaPods subspec | R:code:Package.swift,code:iosApp/Sources/GycToastKuikly/GycToastModule.swift | A:GycToastNative/Core,GycToastNative/Kuikly | S:默认 Core；只有 Kuikly subspec 依赖协同的 Renderer
+LICENSE[SS2M]: F:保留组件源码的 Apache 2.0 许可 | R:- | A:- | S:-
+Package.swift[FV5T]: F:用 Swift 5.9 声明 iOS 15+ presenter 的 SPM 产品 | R:code:GycToastNative.podspec,code:iosApp/Sources/GycToastNative/ToastPresenter.swift | A:GycToastNative | S:SPM 只包含 presenter，不安装 Kuikly Native Module
+README.md[SG7S]: F:提供 Toast Overlay 与 legacy 原生接入、发布坐标和验证入口 | R:code:docs/接入指南.md,code:docs/功能与平台差异.md | A:MessageHost,MessageOverlayState | S:Overlay 由页面持有，原生提示归共享 presenter；当前产物移除 CMP
+build.gradle.kts[FV6T]: F:统一版本、Maven 许可与 staging 配置，并声明构建插件 | R:code:gradle/libs.versions.toml,code:toast-core/build.gradle.kts,code:toast-kuikly/build.gradle.kts | A:GROUP,VERSION | S:-
+gradle.properties[FV3T]: F:设置 Gradle JVM 参数与 AndroidX、非传递 R | R:- | A:- | S:-
+gradlew[XV3S]: F:在 POSIX 环境发现 Java 并运行 Gradle Wrapper | R:code:gradle/wrapper/gradle-wrapper.properties | A:- | S:-
+gradlew.bat[XV3T]: F:在 Windows 发现 Java 并运行 Gradle Wrapper | R:code:gradle/wrapper/gradle-wrapper.properties | A:- | S:-
+jitpack-install.sh[OV8T]: F:校验 GitHub Release 归档的版本、Tag 源树、构建收据及摘要后安装 Maven | R:code:jitpack.yml,code:scripts/ci-release.sh | A:source-receipt.json,SHA256SUMS | S:只安装冻结归档，拒绝不安全路径与归档成员
+jitpack.yml[FV4T]: F:为 Maven 预构建安装器选择 JDK 21 和 toast 参数 | R:code:jitpack-install.sh | A:- | S:-
+release-pack.py[OV5T]: F:只归档请求版本的 Maven 目录并回读 module JSON | R:code:scripts/package-maven.sh | A:plain_file | S:不保留 macOS AppleDouble 文件或旧版本 staging
+settings.gradle.kts[FV6T]: F:声明依赖镜像并装配 core、Kuikly 和 Android 演示工程 | R:code:build.gradle.kts,code:toast-core/build.gradle.kts,code:toast-kuikly/build.gradle.kts | A:- | S:Kuikly 使用独占腾讯源获取完整元数据
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/androidApp/===
+build.gradle.kts[FV4T]: F:配置 Android 原生示例应用并通过工程依赖使用 toast core | R:code:build.gradle.kts,code:toast-core/build.gradle.kts | A:- | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/androidApp/src/main/===
+AndroidManifest.xml[FU3T]: F:声明 Android 原生 Toast 示例的 Launcher Activity 和名称 | R:code:androidApp/src/main/res/values/strings.xml | A:- | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/androidApp/src/main/java/io/github/gycrosskit/toast/sample/===
+MainActivity.java[EU4T]: F:从演示按钮触发本地化的短时 Android 原生提示 | R:code:toast-core/src/androidMain/kotlin/io/github/gycrosskit/toast/AndroidMessagePlatform.kt,code:androidApp/src/main/res/values/strings.xml | A:MainActivity | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/androidApp/src/main/res/values/===
+strings.xml[FL3T]: F:提供示例应用名称、按钮和提示文案 | R:- | A:- | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/docs/===
+RC迁移说明.md[SV4T]: F:记录历史 CMP 剥离、旧消费者迁移与 RC 渠道边界 | R:code:README.md,code:docs/功能与平台差异.md | A:- | S:-
+功能与平台差异.md[SU7T]: F:描述 Kuikly 三端 Overlay 和 Native 提示矩阵、SDK要求与验收状态 | R:code:README.md,code:docs/接入指南.md | A:- | S:厂商 SDK 接线已核对与设备验收各自记录
+完整源码审查.md[SQ4T]: F:记录 2026-10-05 历史自有源码逐文件检查范围及未运行的重验证 | R:code:docs/功能与平台差异.md | A:- | S:-
+开发与验证.md[SV6S]: F:维护单平台编译、版本候选、本地 Maven 检查和消费证据入口 | R:code:README.md,code:scripts/build.sh | A:- | S:-
+接入指南.md[SU6T]: F:按 Android/iOS/OHOS 说明原生和 KuiklyCompose 安装与 host 生命周期 | R:code:README.md,code:docs/功能与平台差异.md | A:- | S:状态随 Host 终止且不能复用；厂商 Kotlin 工具链要匹配 OHOS KLIB
+跨端行为候选.md[SU4T]: F:保存 0.1.4/0.1.5 的 Overlay 跨端历史、文字布局修复和当时验收边界 | R:code:docs/功能与平台差异.md | A:- | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/gradle/===
+libs.versions.toml[FV4T]: F:统一 Kotlin、AGP、Kuikly core/Compose 和编译插件版本 | R:code:build.gradle.kts,code:toast-kuikly/build.gradle.kts | A:- | S:-
+native-toolchain.properties[FV4T]: F:登记打包使用的 Kotlin Native 工具链版本、四个目标和修订号 | R:- | A:- | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/gradle/wrapper/===
+gradle-wrapper.properties[FV3T]: F:定义 Gradle Wrapper 分发 URL 与缓存行为 | R:code:gradlew,code:gradlew.bat | A:- | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/iosApp/Sources/GycToastKuikly/===
+GycToastModule.swift[IU7T]: F:解析 Kuikly show 参数，在 Main 把有效消息转发给共享 iOS presenter | R:code:iosApp/Sources/GycToastNative/ToastPresenter.swift,code:GycToastNative.podspec | A:GycToastModule.show,GycToastModule.register | S:失效与 rootView 门禁保护排队显示；注册显式引用类型防静态裁剪
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/iosApp/Sources/GycToastNative/===
+ToastPresenter.swift[IU9S]: F:在 iOS 主线程以独立非 key UIWindow 展示进程共用的可替换提示 | R:code:iosApp/Sources/GycToastKuikly/GycToastModule.swift,code:Package.swift | A:GycToastPresenter.bind,GycToastPresenter.show | S:弱绑稳定 Scene 根；定时与淡出按 generation 和视图身份保护新提示；VoiceOver 走 announcement
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/ohos/AppScope/===
+app.json5[FV3T]: F:声明 Harmony 工程包标识、默认应用版本和资源引用 | R:code:ohos/build-profile.json5 | A:- | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/ohos/===
+build-profile.json5[FV6T]: F:将 ToastNative 纳入默认 HarmonyOS 产品并设定目标与兼容 API 22 | R:code:ohos/toast-native/build-profile.json5,code:ohos/toast-native/src/main/module.json5 | A:- | S:-
+hvigorfile.ts[FV3T]: F:注册工程级 Hvigor appTasks | R:code:ohos/toast-native/hvigorfile.ts | A:- | S:-
+oh-package.json5[FV3T]: F:声明 Harmony 工程的 OHPM 模型版本和空根依赖 | R:code:ohos/toast-native/oh-package.json5 | A:- | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/ohos/hvigor/===
+hvigor-config.json5[FV3T]: F:设置 Harmony 工程的 Hvigor 模型版本和空执行/调试配置 | R:code:ohos/hvigorfile.ts | A:- | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/ohos/toast-native/===
+CHANGELOG.md[SV4T]: F:记录原生 HAR 版本及当前私库交付状态 | R:code:ohos/toast-native/oh-package.json5 | A:- | S:-
+Index.ets[EU5T]: F:公开 ArkTS presenter 与 Kuikly Toast Module 的包入口 | R:code:ohos/toast-native/src/main/ets/GycToastPresenter.ets,code:ohos/toast-native/src/main/ets/GycToastModule.ets | A:- | S:-
+LICENSE[SS2M]: F:随 Harmony HAR 分发自有源码的 Apache 2.0 许可 | R:code:ohos/toast-native/oh-package.json5 | A:- | S:-
+README.md[SU5T]: F:说明私有 OHPM 安装与 ArkTS presenter 的宿主接入 | R:code:ohos/toast-native/Index.ets,code:docs/接入指南.md | A:- | S:-
+build-profile.json5[FV3T]: F:声明 HAR 使用 stageMode 和默认 HarmonyOS 目标 | R:code:ohos/build-profile.json5 | A:- | S:-
+hvigorfile.ts[FV3T]: F:为 ToastNative 注册 Hvigor harTasks | R:code:ohos/hvigorfile.ts | A:- | S:-
+oh-package.json5[FV6T]: F:声明可发布 HAR 的 OHPM 名称、版本、入口及 Renderer 依赖 | R:code:ohos/toast-native/Index.ets | A:@gycrosskit/toast-native | S:依赖声明为 @kuikly-open/render 2.29.1，独立于 Maven 版本
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/ohos/toast-native/src/main/ets/===
+GycToastModule.ets[IU7T]: F:解析 Kuikly 异步 show 消息并从当前控制器取得 Ability Context | R:code:ohos/toast-native/src/main/ets/GycToastPresenter.ets,code:ohos/toast-native/Index.ets | A:GycToastModule.call,GycToastModule.MODULE_NAME | S:onDestroy 只停本页转发，展示由共享 presenter 接管
+GycToastPresenter.ets[IU8T]: F:用请求代次与 Promise 串行化 HarmonyOS PromptAction 替换展示 | R:code:ohos/toast-native/src/main/ets/GycToastModule.ets | A:GycToastPresenter.shared,GycToastPresenter.show | S:迟到 open 回执的 ID 要关闭；旧 ID 要用原 PromptAction 关闭；单次异常不阻塞后续队列
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/ohos/toast-native/src/main/===
+module.json5[FV3T]: F:声明面向默认与平板设备的 ToastNative HAR 模块 | R:code:ohos/build-profile.json5 | A:- | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/scripts/===
+build.sh[OV7T]: F:分派三端生产编译与 Maven/HAR 打包，iOS 附加原生 Pod | R:code:scripts/package-maven.sh,code:scripts/ci-build-kuikly-render.sh | A:compile,package | S:Harmony compile 接续本地 assembleHar；测试与上传由调用方处理
+check-maven.py[TV6S]: F:验证本地 Maven publication、目标变体、产物可读性及校验摘要 | R:code:scripts/ci-release.sh,code:scripts/package-maven.sh | A:check_sidecars,check_jvm_bytecode | S:-
+check-public-maven.py[TV6M]: F:按完整版本及提交核对公开 Maven 制品、元数据和实际字节 | R:code:scripts/ci-release.sh | A:audit,ready_state | S:校验当前版本的可下载变体，不替代独立宿主消费
+ci-build-kuikly-render.sh[OV6T]: F:解析并编译固定 Kuikly iOS Renderer 和可选配套 Module Pod，核对二进制 | R:code:scripts/build.sh,code:GycToastNative.podspec | A:- | S:-
+ci-java.security[FV3T]: F:为构建 JVM 保留成功的 DNS 缓存并避免缓存解析失败 | R:code:scripts/ci-repositories.gradle | A:- | S:-
+ci-release.sh[OV7T]: F:从不可变 Tag 安装冻结 Maven Release 并核验本地和公开渠道 | R:code:jitpack-install.sh,code:scripts/check-maven.py,code:scripts/check-public-maven.py | A:VERSION,CI_DIAGNOSTICS_DIR | S:证据绑定标签提交，不能把当前 PR SHA 当成已发布版本
+ci-repositories.gradle[FV5T]: F:按环境选择 Gradle 构建缓存、强制行为测试重跑并预热镜像 DNS | R:code:scripts/build.sh,code:settings.gradle.kts | A:- | S:-
+jitpack-metadata.py[XV6T]: F:修正 JitPack 分类冲突的源文件与空资源变体，并刷新摘要 | R:code:scripts/package-maven.sh,code:tests/test_metadata.py | A:normalize | S:先检查全部资源，非空资源须走独立 classifier
+package-maven.sh[OV7T]: F:在独占 staging 校验两个 Maven 产品及其变体，生成供发布的归档 | R:code:scripts/jitpack-metadata.py,code:scripts/check-maven.py,code:scripts/build.sh | A:VERSION | S:构建前清除旧 staging，打包不上传
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/tests/===
+kuikly-module.cjs[TU6T]: F:转译实际 ArkTS 模块并模拟迟到回执、替换和销毁 | R:code:ohos/toast-native/src/main/ets/GycToastModule.ets,code:ohos/toast-native/src/main/ets/GycToastPresenter.ets | A:TYPESCRIPT_PATH | S:模拟验证与实际 HarmonyOS 展示分别验收
+test_jitpack_install.py[TV5T]: F:用合成冻结归档验证正常安装和收据、路径及摘要拒绝 | R:code:jitpack-install.sh | A:- | S:-
+test_metadata.py[TV5T]: F:验证空资源转发清理、含真实文件的归档拒绝及摘要重算 | R:code:scripts/jitpack-metadata.py | A:PublicationContracts | S:零字节文件也属于真实资源，和非空文件一样在写入前拒绝
+test_no_cmp.py[TV6S]: F:核验 CMP 退出后只发布两个产品，保留 Kuikly Compose 与 core 依赖 | R:code:toast-core/build.gradle.kts,code:toast-kuikly/build.gradle.kts,code:scripts/check-maven.py | A:NoCmpContract | S:-
+test_release_candidate.py[TV4T]: F:检查本轮 Maven 与原生渠道的版本对齐及发布边界 | R:code:README.md,code:GycToastNative.podspec | A:- | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/toast-core/===
+build.gradle.kts[FV5T]: F:配置 toast core 的 Android Release、iOS/OHOS 发布变体和测试依赖 | R:code:build.gradle.kts,code:toast-kuikly/build.gradle.kts | A:- | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/toast-core/src/androidMain/kotlin/io/github/gycrosskit/toast/===
+AndroidMessagePlatform.kt[IU8T]: F:在主线程以共享 Android 平台 Toast 替换进程中的旧提示 | R:code:toast-core/src/commonMain/kotlin/io/github/gycrosskit/toast/MessagePlatform.kt,code:toast-kuikly/src/androidMain/kotlin/io/github/gycrosskit/toast/kuikly/AndroidToastModule.kt | A:AndroidMessagePlatform.get,AndroidMessagePlatform.show | S:只保存 applicationContext；迟到后台任务不得替换新请求；空白不分配代次
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/toast-core/src/androidUnitTest/kotlin/io/github/gycrosskit/toast/===
+AndroidMessagePlatformTest.kt[TU5T]: F:验证原生提示主线程次序、旧 Toast 取消、时长与空白处理 | R:code:toast-core/src/androidMain/kotlin/io/github/gycrosskit/toast/AndroidMessagePlatform.kt | A:- | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/toast-core/src/commonMain/kotlin/io/github/gycrosskit/toast/===
+MessageOverlayState.kt[DU9T]: F:维护页面 Overlay 的消息、递增请求代次、关闭终态及共用规格 | R:code:toast-core/src/commonMain/kotlin/io/github/gycrosskit/toast/MessagePlatform.kt,code:toast-kuikly/src/commonMain/kotlin/io/github/gycrosskit/toast/kuikly/MessageHost.kt | A:MessageOverlayState,MessageOverlaySpec | S:同文案再次 show 增加代次；旧 dismiss 不能清新消息；dispose 后不可重开
+MessagePlatform.kt[LU7T]: F:声明宿主本地化、替换语义和默认短提示的跨平台 API | R:code:toast-core/src/commonMain/kotlin/io/github/gycrosskit/toast/MessageOverlayState.kt,code:toast-core/src/androidMain/kotlin/io/github/gycrosskit/toast/AndroidMessagePlatform.kt | A:MessagePlatform.show,AppMessageDuration | S:Overlay 使用固定毫秒数，legacy 原生遵循各自的时长合同
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/toast-core/src/commonTest/kotlin/io/github/gycrosskit/toast/===
+MessageOverlayStateTest.kt[TU5T]: F:验证空白、同文本重发、旧 dismiss 隔离、时长及终态 | R:code:toast-core/src/commonMain/kotlin/io/github/gycrosskit/toast/MessageOverlayState.kt | A:- | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/toast-core/src/iosMain/kotlin/io/github/gycrosskit/toast/===
+IosMessagePlatform.kt[IU7T]: F:将非空本地化文案和时长档位转发给宿主持有的 Swift bridge | R:code:toast-core/src/commonMain/kotlin/io/github/gycrosskit/toast/MessagePlatform.kt,code:iosApp/Sources/GycToastNative/ToastPresenter.swift | A:IosMessageBridge,IosMessagePlatform.show | S:不持有控制器，原生 presenter 调度主线程及替换
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/toast-core/src/iosTest/kotlin/io/github/gycrosskit/toast/===
+IosMessagePlatformTest.kt[TU4T]: F:验证 iOS bridge 的空白忽略、清理文本和时长转发 | R:code:toast-core/src/iosMain/kotlin/io/github/gycrosskit/toast/IosMessagePlatform.kt | A:- | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/toast-kuikly/===
+build.gradle.kts[FV6T]: F:配置 Kuikly Compose、core 与 Android Renderer 依赖并发布 KMP 变体 | R:code:toast-core/build.gradle.kts,code:gradle/libs.versions.toml | A:- | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/toast-kuikly/src/androidMain/kotlin/io/github/gycrosskit/toast/kuikly/===
+AndroidToastModule.kt[IU8T]: F:按 Android Renderer 注册异步 show 接收端，验证请求后转发共享 presenter | R:code:toast-core/src/androidMain/kotlin/io/github/gycrosskit/toast/AndroidMessagePlatform.kt,code:toast-kuikly/src/commonMain/kotlin/io/github/gycrosskit/toast/kuikly/ToastModule.kt | A:registerToastModule,AndroidToastModule.call | S:销毁清本页 Handler 队列，不取消共享 presenter 的展示
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/toast-kuikly/src/androidUnitTest/kotlin/io/github/gycrosskit/toast/kuikly/===
+AndroidToastModuleTest.kt[TU5T]: F:验证模块主线程调度、输入拒绝和销毁后的队列保护 | R:code:toast-kuikly/src/androidMain/kotlin/io/github/gycrosskit/toast/kuikly/AndroidToastModule.kt | A:- | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/toast-kuikly/src/commonMain/kotlin/io/github/gycrosskit/toast/kuikly/===
+MessageComposition.kt[CU6T]: F:提供由宿主或 Host 注入的 Compose 提示平台局部值 | R:code:toast-kuikly/src/commonMain/kotlin/io/github/gycrosskit/toast/kuikly/MessageHost.kt,code:toast-core/src/commonMain/kotlin/io/github/gycrosskit/toast/MessagePlatform.kt | A:ProvideMessagePlatform,rememberMessages | S:没有提供者时报错
+MessageHost.kt[AU9T]: F:按页面 Overlay 状态渲染顶部可访问提示并定时关闭 | R:code:toast-core/src/commonMain/kotlin/io/github/gycrosskit/toast/MessageOverlayState.kt,code:toast-kuikly/src/commonMain/kotlin/io/github/gycrosskit/toast/kuikly/MessageComposition.kt | A:MessageHost | S:按 state 和 requestId 定时；退出终态；背景容器独立以修复旧 Renderer 内容偏移
+ToastModule.kt[EU8T]: F:把有效 Toast 文案、长短档位异步发送给当前 Kuikly Renderer | R:code:ohos/toast-native/src/main/ets/GycToastModule.ets,code:iosApp/Sources/GycToastKuikly/GycToastModule.swift | A:ToastModule.show,ToastModule.dispose,ToastModule.NAME | S:wire 名 GycToastModule；无结果回调；dispose 只停本页，展示归共享原生 presenter
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/verification/===
+build.gradle.kts[TV7T]: F:编译三端独立消费者，检查精确版本与 Kuikly UI 依赖隔离 | R:code:verification/settings.gradle.kts,code:toast-kuikly/build.gradle.kts | A:verifyNoCmpUi,toastVersion | S:本地源码和 remoteOnly 互斥；Android 图必须全解析且无第二套 CMP UI
+gradle.properties[FV3T]: F:设置消费者 AndroidX、Gradle 堆及忽略不可用 Native 目标 | R:code:verification/build.gradle.kts | A:- | S:-
+settings.gradle.kts[FV6T]: F:选择隔离消费的 JitPack、候选 Maven 或显式本地 composite | R:code:verification/build.gradle.kts | A:remoteOnly,toastMavenRepo,verifyLocalSource | S:远程验收固定 JitPack；显式本地源码替换不算远程消费
+候选验收.md[SV4T]: F:记录 0.1.3 候选归档、远程依赖和原生消费的历史证据 | R:code:docs/开发与验证.md,code:README.md | A:- | S:历史 tag 的消费者含 CMP，不能用于证明当前 Kuikly-only 行为
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/verification/ci/===
+test_cache_contract.py[TV4T]: F:校验源码编译缓存开关与行为测试必须重跑的配置文本 | R:code:scripts/ci-repositories.gradle | A:- | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/verification/src/androidMain/kotlin/===
+AndroidProbe.kt[TU4T]: F:编译验证 Android 共享 native presenter 从 Context 创建 | R:code:toast-core/src/androidMain/kotlin/io/github/gycrosskit/toast/AndroidMessagePlatform.kt | A:- | S:-
+NativeModuleProbe.kt[TU4T]: F:编译验证 Android Kuikly 原生注册、构造和销毁接口 | R:code:toast-kuikly/src/androidMain/kotlin/io/github/gycrosskit/toast/kuikly/AndroidToastModule.kt | A:- | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/verification/src/commonMain/kotlin/===
+Probe.kt[TU4T]: F:编译验证公共 MessagePlatform 和短时长调用 | R:code:toast-core/src/commonMain/kotlin/io/github/gycrosskit/toast/MessagePlatform.kt | A:- | S:-
+UnifiedKuiklyProbe.kt[TU5T]: F:编译验证跨端 Kuikly Overlay 将 state、Host 和 Compose 平台读取接在一起 | R:code:toast-kuikly/src/commonMain/kotlin/io/github/gycrosskit/toast/kuikly/MessageHost.kt | A:- | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/verification/src/iosMain/kotlin/===
+IosProbe.kt[TU4T]: F:编译验证 iOS 原生桥可构造 KMP 提示平台 | R:code:toast-core/src/iosMain/kotlin/io/github/gycrosskit/toast/IosMessagePlatform.kt | A:- | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-toast/toast/verification/src/ohosArm64Main/kotlin/===
+OhosProbe.kt[TU4T]: F:编译验证 OHOS Kuikly Module 的长提示和 dispose 调用 | R:code:toast-kuikly/src/commonMain/kotlin/io/github/gycrosskit/toast/kuikly/ToastModule.kt | A:- | S:-
