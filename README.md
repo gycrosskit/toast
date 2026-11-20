@@ -26,79 +26,7 @@ KMP 使用 Kotlin `2.2.21-1.0.0`，Kuikly 使用 `2.29.1-2.0.21-ohos`。`toast-c
 
 ## 架构与调用流程
 
-`toast`定义MessagePlatform/OverlayState/Spec；`toast-kuikly`提供provider和MessageHost。下图保留legacy native路径：Android系统Toast、iOS桥与OHOS Module；共同Overlay在各自Host渲染，详见[功能与平台差异](docs/功能与平台差异.md)。文案与本地化由宿主提供。
-
-```mermaid
-flowchart TB
-    Host[宿主] --> Overlay[toast-kuikly<br/>MessageHost / ProvideMessagePlatform]
-    Overlay --> Core[toast<br/>MessagePlatform]
-    Host --> Core
-    Core --> Android[AndroidMessagePlatform<br/>系统 Toast]
-    Core --> IOS[IosMessagePlatform<br/>IosMessageBridge]
-    IOS --> Swift[GycToastNative<br/>GycToastPresenter]
-    Swift --> Window[UIKit<br/>独立 UIWindow]
-    Core --> Module[toast-kuikly<br/>ToastModule]
-    Module --> Native[HAR<br/>GycToastModule]
-    Native --> Presenter[HAR<br/>GycToastPresenter]
-    Presenter --> Prompt[PromptAction<br/>openToast / closeToast]
-```
-
-HarmonyOS 展示通过共享 presenter 串行处理替换。Kuikly 的 `show` 是无结果回调的异步转发，调用返回不表示消息已经显示。
-
-```mermaid
-sequenceDiagram
-    participant Host as 页面
-    participant Module as ToastModule
-    participant Native as GycToastModule
-    participant Presenter as 共享 presenter
-    participant System as PromptAction
-    Host->>Module: show(message, duration)
-    Module->>Module: 检查状态与文案
-    Module->>Native: show（无回调）
-    Native->>Presenter: show
-    Presenter->>Presenter: 更新代次，串行处理
-    Presenter->>System: closeToast（旧消息）
-    Presenter->>System: openToast
-    System-->>Presenter: toast id
-    alt 展示期间出现更新请求
-        Presenter->>System: closeToast（迟到消息）
-    else 仍为最新请求
-        Presenter->>Presenter: 保存展示状态
-    end
-    Note over Host,Native: dispose 只阻止新转发
-    Note over Presenter,System: 已显示消息归共享 presenter 管理
-```
-
-类图聚焦 KMP 契约及 bridge；KuiklyCompose 的 `ProvideMessagePlatform`、`rememberMessages` 是函数，不是额外 Manager 类。
-
-```mermaid
-classDiagram
-    class MessagePlatform {
-        <<interface>>
-        +show(message, duration)
-    }
-    class AppMessageDuration {
-        <<enumeration>>
-    }
-    class AndroidMessagePlatform {
-        +get(context) AndroidMessagePlatform
-    }
-    class IosMessagePlatform
-    class IosMessageBridge {
-        <<interface>>
-        +showMessage(message, longDuration)
-    }
-    class ToastModule {
-        +dispose()
-    }
-    MessagePlatform <|.. AndroidMessagePlatform
-    MessagePlatform <|.. IosMessagePlatform
-    MessagePlatform <|.. ToastModule
-    MessagePlatform ..> AppMessageDuration : 输入
-    IosMessagePlatform --> IosMessageBridge : 持有
-```
-
-源码：[MessagePlatform 与时长](toast-core/src/commonMain/kotlin/io/github/gycrosskit/toast/MessagePlatform.kt)、[Android 实现](toast-core/src/androidMain/kotlin/io/github/gycrosskit/toast/AndroidMessagePlatform.kt)、[iOS 实现与 bridge](toast-core/src/iosMain/kotlin/io/github/gycrosskit/toast/IosMessagePlatform.kt)、[KuiklyCompose 接线](toast-kuikly/src/commonMain/kotlin/io/github/gycrosskit/toast/kuikly/MessageComposition.kt)、[ToastModule](toast-kuikly/src/commonMain/kotlin/io/github/gycrosskit/toast/kuikly/ToastModule.kt)、[HAR Module](ohos/toast-native/src/main/ets/GycToastModule.ets)、[HAR Presenter](ohos/toast-native/src/main/ets/GycToastPresenter.ets)、[Swift Presenter](iosApp/Sources/GycToastNative/ToastPresenter.swift)。
+`MessageHost` 渲染页面独占的 `MessageOverlayState`，并通过 `rememberMessages()` 提供同一个 `MessagePlatform`。Android、iOS 和 HarmonyOS 各自复用原生 presenter。HarmonyOS 通过 `ToastModule` 异步转发，已显示的提示继续归共享 presenter 管理。接线和时长见[功能与平台差异](docs/功能与平台差异.md)，源码入口见 [AOCI 索引](aoci.txt)。
 
 ## 安装
 
@@ -180,6 +108,6 @@ Apache-2.0，见 [LICENSE](LICENSE)。
 
 HAR 使用受管 HarmonyOS CLT 构建。KLIB 编译、Registry 安装及真机验收分别按实际回执记录。
 
-阶段、缓存、有限网络重试、失败记录与证据边界见[共用 CI 规则](https://github.com/gycrosskit/.github/blob/main/docs/持续集成门禁.md)；本库实际平台命令以 Jenkins 的固定版本 recipe 为准。源码通过、远程消费、HAR/ohpm 与设备验收分别记录。
+缓存、重试和失败留痕见[共用 CI 规则](https://github.com/gycrosskit/.github/blob/main/docs/持续集成门禁.md)。
 
 当前 `verification` 默认消费远程两个现存 Maven 产品；未发布候选可显式传 `-PverifyLocalSource` 验证本仓库源码，该模式不代表公开消费。Android `verifyNoCmpUi` 拒绝第二套 JetBrains/AndroidX CMP UI，允许 KuiklyCompose/runtime。`0.1.x` 的三产品历史验收应检出对应 tag 使用原 consumer，不用当前候选合同重验旧归档。
